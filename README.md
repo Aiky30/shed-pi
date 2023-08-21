@@ -1,4 +1,4 @@
-# Shed-Pi
+# shed-pi
 
 ## Introduction
 
@@ -12,21 +12,19 @@ Automated use cases:
 ## TODO:
 1. Fix: Bug: The script startup gets an incorrect time (Hasn't yet got the internet time)
 2. Instructions on pinout 
-3. venv is crucial before installing any third party packages!
 
 ### before release:
 1. Poetry (Not started)
-2. PyProject.toml (WIP)
-3. README.md
-4. At least some test coverage
-5. Provide systemd script to 3rd parties
+2. At least some test coverage
+3. Provide systemd script to 3rd parties
+4. venv is crucial before installing any third party packages!
+5. Pre commit config with ci integration
 
 ### Wish list:
 - ASGI backend server (Daphne)
 - Native webcomponent FE with Bootstrap
 - pip install raspberry pi
-- pyproject.toml
-
+- modular components that are easy to install from a software and hardware perspective 
 
 ## Installation
 
@@ -70,7 +68,7 @@ nano /lib/systemd/system/shed-pi.service
 
 With the contents 
 
-```toml
+```ini
 [Unit]
 Description=Shed-Pi
 After=multi-user.target

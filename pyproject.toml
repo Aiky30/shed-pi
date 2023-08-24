@@ -14,5 +14,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "TODO"
-"Bug Tracker" = "TODO"
+"Homepage" = "https://github.com/Aiky30/shed-pi"
+"Bug Tracker" = "https://github.com/Aiky30/shed-pi/issues"

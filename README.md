@@ -13,18 +13,15 @@ Automated use cases:
 1. Fix: Bug: The script startup gets an incorrect time (Hasn't yet got the internet time)
 2. Instructions on pinout 
 
-### before release:
-1. Poetry (Not started)
-2. At least some test coverage
-3. Provide systemd script to 3rd parties
-4. venv is crucial before installing any third party packages!
-5. Pre commit config with ci integration
-
 ### Wish list:
+- Poetry (Not started)
 - ASGI backend server (Daphne)
 - Native webcomponent FE with Bootstrap
 - pip install raspberry pi
 - modular components that are easy to install from a software and hardware perspective 
+- Provide systemd script to 3rd parties 
+- venv is crucial before installing any third party packages!
+- Pre commit config with ci integration
 
 ## Installation
 

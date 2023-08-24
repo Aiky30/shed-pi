@@ -1,0 +1,9 @@
+.gitignore
+CHANGELOG.md
+README.md
+pyproject.toml
+temp_logger.py
+shed_pi.egg-info/PKG-INFO
+shed_pi.egg-info/SOURCES.txt
+shed_pi.egg-info/dependency_links.txt
+shed_pi.egg-info/top_level.txt

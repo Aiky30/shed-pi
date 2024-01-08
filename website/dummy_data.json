@@ -1,0 +1,10 @@
+{
+  "headings": ["datetime", "temperature", "humidity"],
+  "readings": [
+    {
+      "datetime": "2024-01-07 12:22:44",
+      "temperature": "12.345",
+      "humidity": "12"
+    }
+  ]
+}

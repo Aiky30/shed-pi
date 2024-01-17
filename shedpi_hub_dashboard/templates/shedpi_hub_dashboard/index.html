@@ -1,3 +1,6 @@
+
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,16 +8,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ShedPi</title>
-    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="{% static 'shedpi_hub_dashboard/css/landing.css' %}">
   </head>
   <body>
     <header>
       <h1>Shed Pi data</h1>
     </header>
-    <div class="contents">
+    <div class="contents" data-json-feed="{% static 'shedpi_hub_dashboard/dummy_data.json' %}">
     </div>
     <footer>
     </footer>
-    <script src="js/index.js"></script>
+    <script src="{% static 'shedpi_hub_dashboard/js/index.js' %}"></script>
   </body>
 </html>

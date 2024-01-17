@@ -1,12 +1,12 @@
 
-contents = document.getElementsByClassName("contents");
+const contents = document.getElementsByClassName("contents");
+let section = contents[0]
 
-
-const myRequest = new Request("dummy_data.json");
+const url = section.getAttribute("data-json-feed")
+const myRequest = new Request(url);
 
 let drawTable = function (data) {
   let table = document.createElement("table");
-
 
   // Table Header
   let headerRow = document.createElement("tr");
@@ -32,7 +32,7 @@ let drawTable = function (data) {
   }
 
   // Add the table to the page
-  contents[0].append(table);
+  section.append(table);
 }
 
 

@@ -20,3 +20,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/Aiky30/shed-pi"
 "Bug Tracker" = "https://github.com/Aiky30/shed-pi/issues"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "shedpi_hub_example_project.settings"

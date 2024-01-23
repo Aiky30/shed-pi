@@ -3,18 +3,15 @@ import glob
 import time
 from datetime import datetime
 import logging
-import sqlite3
-
-from database.constants import DB_NAME
 
 
 logging.basicConfig(
-    filename='/var/log/shed-pi.log',
-    level=logging.INFO,
-    format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
+    filename = '/var/log/shed-pi.log',
+    level = logging.INFO,
+    format = '%(asctime)s:%(levelname)s:%(name)s:%(message)s'
 )
 logger = logging.getLogger("parent")
-TIME_TO_SLEEP = 60  # time in seconds
+TIME_TO_SLEEP = 60 # time in seconds
 
 
 class TempProbe:
@@ -55,16 +52,8 @@ def get_cpu_temp():
 
 def get_time():
     now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")  # 24-Hour:Minute:Second
+    current_time = now.strftime("%H:%M:%S") # 24-Hour:Minute:Second
     return current_time
-
-
-def insert_data(values):
-    db = sqlite3.connect(DB_NAME)
-    cursor = db.cursor()
-    cursor.execute("INSERT INTO device_reading (device_temp, probe_temp) VALUES (:device_temp, :probe_temp)", values)
-    db.commit()
-    db.close()
 
 
 def main():
@@ -81,8 +70,6 @@ def main():
         pi_temp = get_cpu_temp()
         probe_1_temp = temp_probe.read_temp()
         logger.info(f"Pi temp: {pi_temp}, probe_1 temp: {probe_1_temp}")
-
-        insert_data((pi_temp, probe_1_temp))
 
         time.sleep(TIME_TO_SLEEP)
 

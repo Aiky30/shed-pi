@@ -7,9 +7,11 @@ from .models import Device, DeviceModule, DeviceModuleReading
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
 
+
 @admin.register(DeviceModule)
 class DeviceModuleAdmin(admin.ModelAdmin):
     pass
+
 
 @admin.register(DeviceModuleReading)
 class DeviceModuleReadingAdmin(admin.ModelAdmin):

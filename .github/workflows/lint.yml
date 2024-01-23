@@ -19,7 +19,6 @@ jobs:
           python-version: 3.11
 
       - name: Pre-commit checks
-        # Note: The pre-commit version is duplicated in the pyproject.toml
         run: |
           pip install pre-commit==3.6.0
           pre-commit run --all-files

@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.db.models import JSONField
+from jsonschema import validate
 
 from shedpi_hub_dashboard.forms.fields import PrettyJsonFormField
 
@@ -44,3 +45,24 @@ class DeviceModuleReading(models.Model):
     )
     data = PrettySONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def validate_data(self) -> None:
+        """
+        Validates the data against the schema defined in the DeviceModule,
+        the purpose is to ensure that the data stored matches the data structure expected
+        """
+        schema = self.device_module.schema
+
+        # Only validate if a schema exists
+        if schema:
+            validate(
+                instance=self.data, schema=schema,
+            )
+
+    def save(self, *args, **kwargs) -> None:
+        """
+        On save validates
+        """
+        self.validate_data()
+
+        super().save(*args, **kwargs)

@@ -1,9 +1,9 @@
 import pytest
-from jsonschema import validate
 
 from jsonschema.exceptions import SchemaError, ValidationError
 
-from shedpi_hub_dashboard.tests.utils.factories import DeviceModuleFactory, DeviceModuleReadingFactory
+from shedpi_hub_dashboard.tests.utils.factories import DeviceModuleFactory
+from shedpi_hub_dashboard.models import DeviceModuleReading
 
 
 """
@@ -50,11 +50,11 @@ def test_schema_validation_happy_path():
         "age": 21
     }
     device_module = DeviceModuleFactory(schema=schema)
-    reading = DeviceModuleReadingFactory(data=data)
 
-    validate(
-        instance=reading.data, schema=device_module.schema,
-    )
+    reading = DeviceModuleReading(device_module=device_module, data=data)
+
+    # By default no validation error is raised
+    reading.save()
 
 
 @pytest.mark.django_db
@@ -73,20 +73,51 @@ def test_json_schema_invalid_data():
         }
     }
     data = {
+        "age": 21
+    }
+    updated_data = {
         "age": "Some text"
     }
     device_module = DeviceModuleFactory(schema=schema)
-    reading = DeviceModuleReadingFactory(data=data)
+    reading = DeviceModuleReading(device_module=device_module, data=data)
+
+    # No error occurs with valid data
+    reading.save()
+
+    # With invalid data it now throws a validation error
+    with pytest.raises(ValidationError):
+        reading.data = updated_data
+        reading.save()
+
+
+@pytest.mark.django_db
+def test_json_schema_update_with_invalid_data():
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Person",
+        "type": "object",
+        "properties": {
+            "age": {
+                "description": "Age in years which must be equal to or greater than zero.",
+                "type": "integer",
+                "minimum": 0
+            }
+        }
+    }
+    data = {
+        "age": "Some text"
+    }
+    device_module = DeviceModuleFactory(schema=schema)
+    reading = DeviceModuleReading(device_module=device_module, data=data)
 
     with pytest.raises(ValidationError):
-        validate(
-            instance=reading.data, schema=device_module.schema,
-        )
+        reading.save()
 
 
 @pytest.mark.django_db
 def test_json_schema_invalid_schema():
-    schema = {}
+    schema = {"type": 1234}
     data = {
         "firstName": "John",
         "lastName": "Doe",
@@ -94,9 +125,7 @@ def test_json_schema_invalid_schema():
     }
 
     device_module = DeviceModuleFactory(schema=schema)
-    reading = DeviceModuleReadingFactory(data=data)
+    reading = DeviceModuleReading(device_module=device_module, data=data)
 
     with pytest.raises(SchemaError):
-        validate(
-            instance=reading.data, schema=device_module.schema,
-        )
+        reading.save()

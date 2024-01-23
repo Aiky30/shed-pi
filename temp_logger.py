@@ -3,9 +3,6 @@ import glob
 import time
 from datetime import datetime
 import logging
-import sqlite3
-
-from database.constants import DB_NAME
 
 
 logging.basicConfig(
@@ -59,14 +56,6 @@ def get_time():
     return current_time
 
 
-def insert_data(values):
-    db = sqlite3.connect(DB_NAME)
-    cursor = db.cursor()
-    cursor.execute("INSERT INTO device_reading (device_temp, probe_temp) VALUES (:device_temp, :probe_temp)", values)
-    db.commit()
-    db.close()
-
-
 def main():
 
     logger.info(f"Shed pi started: {get_time()}, using version: 0.0.1")
@@ -81,8 +70,6 @@ def main():
         pi_temp = get_cpu_temp()
         probe_1_temp = temp_probe.read_temp()
         logger.info(f"Pi temp: {pi_temp}, probe_1 temp: {probe_1_temp}")
-
-        insert_data((pi_temp, probe_1_temp))
 
         time.sleep(TIME_TO_SLEEP)
 

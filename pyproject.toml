@@ -80,6 +80,11 @@ select = [
     "ERA",      # eradicate
     "RUF",      # ruff-specific rules
 ]
+ignore = [
+    "G004",
+    "ERA001",
+    "PTH123",
+]
 exclude = [
     ".git",
     ".pytest_cache",

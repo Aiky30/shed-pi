@@ -6,30 +6,51 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Device',
+            name="Device",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=20)),
-                ('location', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("location", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='DeviceReading',
+            name="DeviceReading",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('device_temp', models.CharField(max_length=8)),
-                ('probe_temp', models.CharField(max_length=8)),
-                ('measurement_type', models.CharField(max_length=10)),
-                ('datetime', models.DateTimeField()),
-                ('device', models.ForeignKey(help_text='A device whose readings were collected.', on_delete=django.db.models.deletion.CASCADE, to='shedpi_hub_dashboard.device')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("device_temp", models.CharField(max_length=8)),
+                ("probe_temp", models.CharField(max_length=8)),
+                ("measurement_type", models.CharField(max_length=10)),
+                ("datetime", models.DateTimeField()),
+                (
+                    "device",
+                    models.ForeignKey(
+                        help_text="A device whose readings were collected.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shedpi_hub_dashboard.device",
+                    ),
+                ),
             ],
         ),
     ]

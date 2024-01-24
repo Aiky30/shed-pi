@@ -1,6 +1,7 @@
 import json
-from django.forms import widgets
+
 from django.forms import JSONField as JSONFormField
+from django.forms import widgets
 
 
 class PrettyJSONWidget(widgets.Textarea):
@@ -9,9 +10,7 @@ class PrettyJSONWidget(widgets.Textarea):
         value = json.dumps(json.loads(value), indent=2, sort_keys=True)
 
         # Calculate the size of the contents
-        row_lengths = [
-            len(r) for r in value.split("\n")
-        ]
+        row_lengths = [len(r) for r in value.split("\n")]
         content_width = max(len(row_lengths) + 2, 20)
         content_height = max(max(row_lengths) + 2, 45)
 

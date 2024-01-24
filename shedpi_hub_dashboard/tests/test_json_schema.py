@@ -1,16 +1,14 @@
 import pytest
-
 from jsonschema.exceptions import SchemaError, ValidationError
 
-from shedpi_hub_dashboard.tests.utils.factories import DeviceModuleFactory
 from shedpi_hub_dashboard.models import DeviceModuleReading
-
+from shedpi_hub_dashboard.tests.utils.factories import DeviceModuleFactory
 
 """
 device_temp = models.CharField(max_length=8)
     probe_temp = models.CharField(max_length=8)
     measurement_type = models.CharField(max_length=10)
-    
+
 TODO:
     # Design where the validation shoudl live, needs to:
     # '- Validate on save
@@ -29,26 +27,16 @@ def test_schema_validation_happy_path():
         "title": "Person",
         "type": "object",
         "properties": {
-            "firstName": {
-                "type": "string",
-                "description": "The person's first name."
-            },
-            "lastName": {
-                "type": "string",
-                "description": "The person's last name."
-            },
+            "firstName": {"type": "string", "description": "The person's first name."},
+            "lastName": {"type": "string", "description": "The person's last name."},
             "age": {
                 "description": "Age in years which must be equal to or greater than zero.",
                 "type": "integer",
-                "minimum": 0
-            }
-        }
+                "minimum": 0,
+            },
+        },
     }
-    data = {
-        "firstName": "John",
-        "lastName": "Doe",
-        "age": 21
-    }
+    data = {"firstName": "John", "lastName": "Doe", "age": 21}
     device_module = DeviceModuleFactory(schema=schema)
 
     reading = DeviceModuleReading(device_module=device_module, data=data)
@@ -68,16 +56,12 @@ def test_json_schema_invalid_data():
             "age": {
                 "description": "Age in years which must be equal to or greater than zero.",
                 "type": "integer",
-                "minimum": 0
+                "minimum": 0,
             }
-        }
+        },
     }
-    data = {
-        "age": 21
-    }
-    updated_data = {
-        "age": "Some text"
-    }
+    data = {"age": 21}
+    updated_data = {"age": "Some text"}
     device_module = DeviceModuleFactory(schema=schema)
     reading = DeviceModuleReading(device_module=device_module, data=data)
 
@@ -101,13 +85,11 @@ def test_json_schema_update_with_invalid_data():
             "age": {
                 "description": "Age in years which must be equal to or greater than zero.",
                 "type": "integer",
-                "minimum": 0
+                "minimum": 0,
             }
-        }
+        },
     }
-    data = {
-        "age": "Some text"
-    }
+    data = {"age": "Some text"}
     device_module = DeviceModuleFactory(schema=schema)
     reading = DeviceModuleReading(device_module=device_module, data=data)
 
@@ -118,11 +100,7 @@ def test_json_schema_update_with_invalid_data():
 @pytest.mark.django_db
 def test_json_schema_invalid_schema():
     schema = {"type": 1234}
-    data = {
-        "firstName": "John",
-        "lastName": "Doe",
-        "age": 21
-    }
+    data = {"firstName": "John", "lastName": "Doe", "age": 21}
 
     device_module = DeviceModuleFactory(schema=schema)
     reading = DeviceModuleReading(device_module=device_module, data=data)

@@ -4,17 +4,6 @@ from jsonschema.exceptions import SchemaError, ValidationError
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import DeviceModuleFactory
 
-"""
-device_temp = models.CharField(max_length=8)
-    probe_temp = models.CharField(max_length=8)
-    measurement_type = models.CharField(max_length=10)
-
-TODO:
-    # Design where the validation shoudl live, needs to:
-    # '- Validate on save
-    # - Validate on Restful save / edit
-"""
-
 
 @pytest.mark.django_db
 def test_schema_validation_happy_path():

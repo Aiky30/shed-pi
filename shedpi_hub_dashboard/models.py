@@ -1,4 +1,5 @@
 import uuid
+
 from django.db import models
 from django.db.models import JSONField
 from jsonschema import validate
@@ -56,7 +57,8 @@ class DeviceModuleReading(models.Model):
         # Only validate if a schema exists
         if schema:
             validate(
-                instance=self.data, schema=schema,
+                instance=self.data,
+                schema=schema,
             )
 
     def save(self, *args, **kwargs) -> None:

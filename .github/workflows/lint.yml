@@ -1,0 +1,24 @@
+name: Lint
+on:
+  push:
+    branches-ignore:
+      - "release/**"
+
+jobs:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Pre-commit checks
+        run: |
+          pip install pre-commit==3.6.0
+          pre-commit run --all-files

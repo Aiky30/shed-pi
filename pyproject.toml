@@ -23,3 +23,80 @@ classifiers = [
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "shedpi_hub_example_project.settings"
+
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+# Official documentation on ruff rules can be viewed here: https://beta.ruff.rs/docs/rules/
+# Please note that some pydocstyle rules do not work for the PEP257 docstring format this repo uses. Please view the
+# official documentation for more information: https://www.pydocstyle.org/en/5.0.1/error_codes.html#default-conventions
+select = [
+    "F",        # pyflakes
+    "E",        # pycodestyle errors
+    "W",        # pycodestyle warnings
+    "I",        # isort
+    "N",        # pep8-naming
+    #"D101",     # pydocstyle: Missing docstring in public class
+    #"D102",     # pydocstyle: Missing docstring in public method
+    #"D103",     # pydocstyle: Missing docstring in public function
+    "D201",     # pydocstyle: No blank lines allowed before function docstring (found {num_lines})
+    "D202",     # pydocstyle: No blank lines allowed after function docstring (found {num_lines})
+    "D204",     # pydocstyle: 1 blank line required after class docstring
+    "D206",     # pydocstyle: Docstring should be indented with spaces, not tabs
+    "D207",     # pydocstyle: Docstring is under-indented
+    "D208",     # pydocstyle: Docstring is over-indented
+    "D209",     # pydocstyle: Multi-line docstring closing quotes should be on a separate line
+    "D300",     # pydocstyle: Use triple double quotes """
+    "D403",     # pydocstyle: First word of the first line should be properly capitalized
+    #"ANN001",   # flake8-annotations: Missing type annotation for function argument {name}
+    #"ANN002",   # flake8-annotations: Missing type annotation for *{name}
+    #"ANN003",   # flake8-annotations: Missing type annotation for **{name}
+    #"ANN201",   # flake8-annotations: Missing return type annotation for public function {name}
+    #"ANN202",   # flake8-annotations: Missing return type annotation for private function {name}
+    #"ANN204",   # flake8-annotations: Missing return type annotation for special method {name}
+    #"ANN205",   # flake8-annotations: Missing return type annotation for staticmethod {name}
+    #"ANN206",   # flake8-annotations: Missing return type annotation for classmethod {name}
+    "C4",       # flake8-comprehensions
+    "DTZ",      # flake8-datetimez
+    "ISC",      # flake8-implicit-str-concat
+    "ICN",      # flake8-import-conventions
+    "G",        # flake8-logging-format
+    "INP",      # flake8-no-pep420
+    "PIE",      # flake8-pie
+    #"T20",      # flake8-print
+    "Q",        # flake8-quotes
+    "SLF",      # flake8-self
+    "SIM",      # flake8-simplify
+    "PTH",      # flake8-use-pathlib
+    "ERA",      # eradicate
+    "RUF",      # ruff-specific rules
+]
+ignore = [
+    "G004",
+    "ERA001",
+    "PTH123",
+]
+exclude = [
+    ".git",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".gitignore",
+    ".github",
+    "migrations"
+]
+force-exclude = true
+line-length = 120
+target-version = "py311"

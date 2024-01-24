@@ -7,38 +7,80 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Device',
+            name="Device",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=20)),
-                ('location', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("location", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='DeviceModule',
+            name="DeviceModule",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=20)),
-                ('location', models.CharField(max_length=50)),
-                ('schema', shedpi_hub_dashboard.models.PrettySONField(blank=True, null=True)),
-                ('device', models.ForeignKey(help_text='A device which manages the module.', on_delete=django.db.models.deletion.CASCADE, to='shedpi_hub_dashboard.device')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=20)),
+                ("location", models.CharField(max_length=50)),
+                (
+                    "schema",
+                    shedpi_hub_dashboard.models.PrettySONField(blank=True, null=True),
+                ),
+                (
+                    "device",
+                    models.ForeignKey(
+                        help_text="A device which manages the module.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shedpi_hub_dashboard.device",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='DeviceModuleReading',
+            name="DeviceModuleReading",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', shedpi_hub_dashboard.models.PrettySONField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('device_module', models.ForeignKey(help_text='A device whose readings were collected.', on_delete=django.db.models.deletion.CASCADE, to='shedpi_hub_dashboard.devicemodule')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "data",
+                    shedpi_hub_dashboard.models.PrettySONField(blank=True, null=True),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "device_module",
+                    models.ForeignKey(
+                        help_text="A device whose readings were collected.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shedpi_hub_dashboard.devicemodule",
+                    ),
+                ),
             ],
         ),
     ]

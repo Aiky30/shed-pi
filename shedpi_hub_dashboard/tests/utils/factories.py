@@ -1,3 +1,4 @@
+from typing import ClassVar
 from uuid import uuid4
 
 import factory
@@ -23,7 +24,7 @@ class DeviceModuleFactory(DjangoModelFactory):
     device = factory.SubFactory(DeviceFactory)
     name = factory.Faker("word")
     location = factory.Faker("word")
-    schema = {}
+    schema: ClassVar[dict] = {}
 
 
 class DeviceModuleReadingFactory(DjangoModelFactory):
@@ -31,4 +32,4 @@ class DeviceModuleReadingFactory(DjangoModelFactory):
         model = DeviceModuleReading
 
     device_module = factory.SubFactory(DeviceModuleFactory)
-    data = {}
+    data: ClassVar[dict] = {}

@@ -1,0 +1,17 @@
+name: Test
+on:
+  push:
+    branches-ignore:
+      - "release/**"
+
+jobs:
+  build-and-test:
+    name: Build and run unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Run tests
+        run: pytest

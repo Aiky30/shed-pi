@@ -7,7 +7,7 @@ from rest_framework import routers
 from shedpi_hub_dashboard.views import DeviceModuleReadingViewSet
 
 router = routers.DefaultRouter()
-router.register(r"device_module_readings", DeviceModuleReadingViewSet)
+router.register(r"device-module-readings", DeviceModuleReadingViewSet)
 
 urlpatterns = [
     *[

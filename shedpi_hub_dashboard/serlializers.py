@@ -1,9 +1,15 @@
 from rest_framework import serializers
 
-from .models import DeviceModuleReading
+from .models import DeviceModule, DeviceModuleReading
 
 
-class DeviceModuleReadingSerializer(serializers.HyperlinkedModelSerializer):
+class DeviceModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeviceModule
+        fields = "__all__"
+
+
+class DeviceModuleReadingSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceModuleReading
         fields = "__all__"

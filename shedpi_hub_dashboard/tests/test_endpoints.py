@@ -18,6 +18,12 @@ def test_device_module_list(client):
     assert len(response.data) == 2
 
 
+# TODO: device_module_readings_list
+@pytest.mark.django_db
+def device_module_readings_list(client):
+    assert False
+
+
 @pytest.mark.django_db
 def test_device_module_reading_submission(client):
     schema = {

@@ -25,15 +25,21 @@ let drawDropdown = function (data) {
   emptySelector.textContent = "Please Select"
   dropdown.append(emptySelector)
 
+
+  dropdown.addEventListener('change', function (e) {
+    optionId = this.selectedOptions[0].id
+
+    if (optionId) {
+      loadTableData(optionId)
+    }
+  });
+
   for (let deviceModuleIndex in data) {
     const deviceModule = data[deviceModuleIndex]
 
     let optionElement = document.createElement("option");
     optionElement.textContent = deviceModule.device + " - " + deviceModule.name
-
-    optionElement.addEventListener('select', function (e) {
-      console.log("Draw data")
-    });
+    optionElement.id = deviceModule.device
 
     dropdown.append(optionElement);
   }
@@ -44,7 +50,13 @@ let drawDropdown = function (data) {
 
 /* Table visual */
 
-let loadTableData = function () {
+let loadTableData = function (deviceModuleId) {
+
+
+  // TODO: Get data based on deviceModuleId
+  // Endpoint: http://127.0.0.1:8000/api/v1/device-module-readings/
+  // device_module = deviceModuleId
+
   const urlDeviceModuleReading = section.getAttribute("data-json-feed")
   let endpointDeviceModuleReading = new Request(urlDeviceModuleReading);
   response = fetch(endpointDeviceModuleReading)

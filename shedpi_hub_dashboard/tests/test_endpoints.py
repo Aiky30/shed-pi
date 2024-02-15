@@ -21,9 +21,6 @@ def test_device_module_list(client):
     assert len(response.data) == 2
 
 
-# TODO: device_module_readings_list
-
-
 @pytest.mark.django_db
 def test_device_module_readings_list(client):
     """
@@ -39,12 +36,8 @@ def test_device_module_readings_list(client):
         },
     }
     device_module = DeviceModuleFactory(schema=schema)
-    reading_1 = DeviceModuleReadingFactory(
-        device_module=device_module, data={"temperature": "20"}
-    )
-    reading_2 = DeviceModuleReadingFactory(
-        device_module=device_module, data={"temperature": "22"}
-    )
+    DeviceModuleReadingFactory(device_module=device_module, data={"temperature": "20"})
+    DeviceModuleReadingFactory(device_module=device_module, data={"temperature": "22"})
     # Another modules readings that shouldn't be returned
     DeviceModuleReadingFactory(data={"temperature": "10"})
 
@@ -69,12 +62,8 @@ def test_device_module_readings_list_no_device_module_supplied(client):
         },
     }
     device_module = DeviceModuleFactory(schema=schema)
-    reading_1 = DeviceModuleReadingFactory(
-        device_module=device_module, data={"temperature": "20"}
-    )
-    reading_2 = DeviceModuleReadingFactory(
-        device_module=device_module, data={"temperature": "22"}
-    )
+    DeviceModuleReadingFactory(device_module=device_module, data={"temperature": "20"})
+    DeviceModuleReadingFactory(device_module=device_module, data={"temperature": "22"})
     # Another modules readings that shouldn't be returned
     DeviceModuleReadingFactory(data={"temperature": "10"})
 

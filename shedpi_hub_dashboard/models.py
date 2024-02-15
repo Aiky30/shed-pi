@@ -1,17 +1,9 @@
 import uuid
 
 from django.db import models
-from django.db.models import JSONField
 from jsonschema import validate
 
-from shedpi_hub_dashboard.forms.fields import PrettyJsonFormField
-
-
-class PrettySONField(JSONField):
-    def formfield(self, **kwargs):
-        defaults = {"form_class": PrettyJsonFormField}
-        defaults.update(kwargs)
-        return super().formfield(**defaults)
+from shedpi_hub_dashboard.forms.fields import PrettyJsonField
 
 
 class Device(models.Model):
@@ -32,7 +24,7 @@ class DeviceModule(models.Model):
     )
     name = models.CharField(max_length=20)
     location = models.CharField(max_length=50)
-    schema = PrettySONField(null=True, blank=True)
+    schema = PrettyJsonField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -44,7 +36,7 @@ class DeviceModuleReading(models.Model):
         on_delete=models.CASCADE,
         help_text="A device whose readings were collected.",
     )
-    data = PrettySONField(null=True, blank=True)
+    data = PrettyJsonField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def validate_data(self) -> None:

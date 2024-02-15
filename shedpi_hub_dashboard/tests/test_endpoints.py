@@ -4,7 +4,10 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
-from shedpi_hub_dashboard.tests.utils.factories import DeviceModuleFactory
+from shedpi_hub_dashboard.tests.utils.factories import (
+    DeviceModuleFactory,
+    DeviceModuleReadingFactory,
+)
 
 
 @pytest.mark.django_db
@@ -19,9 +22,68 @@ def test_device_module_list(client):
 
 
 # TODO: device_module_readings_list
+
+
 @pytest.mark.django_db
-def device_module_readings_list(client):
-    assert False
+def test_device_module_readings_list(client):
+    """
+    An individual device module readings are returned from the module readings endpoint
+    """
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reading",
+        "type": "object",
+        "properties": {
+            "temperature": {"type": "string", "description": "The Temperature"},
+        },
+    }
+    device_module = DeviceModuleFactory(schema=schema)
+    reading_1 = DeviceModuleReadingFactory(
+        device_module=device_module, data={"temperature": "20"}
+    )
+    reading_2 = DeviceModuleReadingFactory(
+        device_module=device_module, data={"temperature": "22"}
+    )
+    # Another modules readings that shouldn't be returned
+    DeviceModuleReadingFactory(data={"temperature": "10"})
+
+    # url = reverse("devicemodulereading-detail", kwargs={"pk": device_module.id})
+    url = reverse("devicemodulereading-list")
+    response = client.get(url, data={"device_module": device_module.id})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.data) == 2
+
+
+@pytest.mark.django_db
+def test_device_module_readings_list_no_device_module_supplied(client):
+    """ """
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reading",
+        "type": "object",
+        "properties": {
+            "temperature": {"type": "string", "description": "The Temperature"},
+        },
+    }
+    device_module = DeviceModuleFactory(schema=schema)
+    reading_1 = DeviceModuleReadingFactory(
+        device_module=device_module, data={"temperature": "20"}
+    )
+    reading_2 = DeviceModuleReadingFactory(
+        device_module=device_module, data={"temperature": "22"}
+    )
+    # Another modules readings that shouldn't be returned
+    DeviceModuleReadingFactory(data={"temperature": "10"})
+
+    # url = reverse("devicemodulereading-detail", kwargs={"pk": device_module.id})
+    url = reverse("devicemodulereading-list")
+    response = client.get(url, data={})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.data) == 3
 
 
 @pytest.mark.django_db

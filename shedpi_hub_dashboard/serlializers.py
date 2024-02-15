@@ -13,3 +13,4 @@ class DeviceModuleReadingSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceModuleReading
         fields = "__all__"
+        extra_kwargs = {"device_module": {"required": True}}

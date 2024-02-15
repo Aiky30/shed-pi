@@ -15,4 +15,4 @@ class DeviceModuleAdmin(admin.ModelAdmin):
 
 @admin.register(DeviceModuleReading)
 class DeviceModuleReadingAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "device_module_id", "created_at")

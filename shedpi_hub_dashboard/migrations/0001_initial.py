@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ("location", models.CharField(max_length=50)),
                 (
                     "schema",
-                    shedpi_hub_dashboard.models.PrettySONField(blank=True, null=True),
+                    shedpi_hub_dashboard.models.PrettyJsonField(blank=True, null=True),
                 ),
                 (
                     "device",
@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "data",
-                    shedpi_hub_dashboard.models.PrettySONField(blank=True, null=True),
+                    shedpi_hub_dashboard.models.PrettyJsonField(blank=True, null=True),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 (

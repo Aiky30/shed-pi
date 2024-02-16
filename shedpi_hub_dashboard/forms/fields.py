@@ -1,13 +1,17 @@
 import json
 
+from django.db.models import JSONField
 from django.forms import JSONField as JSONFormField
 from django.forms import widgets
 
 
 class PrettyJSONWidget(widgets.Textarea):
     def format_value(self, value):
-        # Prettify the json
-        value = json.dumps(json.loads(value), indent=2, sort_keys=True)
+        try:
+            # Prettify the json
+            value = json.dumps(json.loads(value), indent=2, sort_keys=True)
+        except json.JSONDecodeError:
+            return super(PrettyJSONWidget, self).format_value(value)
 
         # Calculate the size of the contents
         row_lengths = [len(r) for r in value.split("\n")]
@@ -23,3 +27,10 @@ class PrettyJSONWidget(widgets.Textarea):
 
 class PrettyJsonFormField(JSONFormField):
     widget = PrettyJSONWidget
+
+
+class PrettyJsonField(JSONField):
+    def formfield(self, **kwargs):
+        defaults = {"form_class": PrettyJsonFormField}
+        defaults.update(kwargs)
+        return super().formfield(**defaults)

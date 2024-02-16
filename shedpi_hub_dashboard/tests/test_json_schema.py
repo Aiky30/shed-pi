@@ -87,6 +87,30 @@ def test_json_schema_update_with_invalid_data():
 
 
 @pytest.mark.django_db
+def test_json_schema_update_with_more_fields_supplied():
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Person",
+        "type": "object",
+        "properties": {
+            "age": {
+                "description": "Age in years which must be equal to or greater than zero.",
+                "type": "integer",
+                "minimum": 0,
+            }
+        },
+        "unevaluatedProperties": False,
+    }
+    data = {"age": 1, "someOtherField": "Some value here"}
+    device_module = DeviceModuleFactory(schema=schema)
+    reading = DeviceModuleReading(device_module=device_module, data=data)
+
+    with pytest.raises(ValidationError):
+        reading.save()
+
+
+@pytest.mark.django_db
 def test_json_schema_invalid_schema():
     schema = {"type": 1234}
     data = {"firstName": "John", "lastName": "Doe", "age": 21}

@@ -50,6 +50,32 @@ def test_device_module_readings_list(client):
 
 
 @pytest.mark.django_db
+def test_device_module_readings_list_pagination(client):
+    """
+    An individual device module readings are returned from the module readings endpoint
+    """
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reading",
+        "type": "object",
+        "properties": {
+            "temperature": {"type": "string", "description": "The Temperature"},
+        },
+    }
+    device_module = DeviceModuleFactory(schema=schema)
+    DeviceModuleReadingFactory.create_batch(
+        110, device_module=device_module, data={"temperature": "20"}
+    )
+
+    url = reverse("devicemodulereading-list")
+    response = client.get(url, data={"device_module": device_module.id})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.data) == 100
+
+
+@pytest.mark.django_db
 def test_device_module_readings_list_no_device_module_supplied(client):
     """ """
     schema = {

@@ -2,7 +2,6 @@ from django.template.response import TemplateResponse
 from rest_framework import viewsets
 
 from .models import DeviceModule, DeviceModuleReading
-from .pagination import CreatedAtBasedCursorPagination
 from .serlializers import DeviceModuleReadingSerializer, DeviceModuleSerializer
 
 
@@ -19,7 +18,6 @@ class DeviceModuleViewSet(viewsets.ModelViewSet):
 class DeviceModuleReadingViewSet(viewsets.ModelViewSet):
     queryset = DeviceModuleReading.objects.all()
     serializer_class = DeviceModuleReadingSerializer
-    pagination_class = CreatedAtBasedCursorPagination
 
     def get_queryset(self):
         # FIXME: Validate that the user supplied this get param!

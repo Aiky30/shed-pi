@@ -1,7 +1,7 @@
 const contents = document.getElementsByClassName("contents")[0];
 let section = contents
 
-let deviceModuleEndpoint = "/api/v1/device-module-readings/"
+let deviceModuleEndpoint = ""
 
 // Global store for the device modules, with schema
 let storeDeviceModules = []
@@ -72,13 +72,14 @@ section.append(tableContainer);
 
 let loadTableData = function (deviceModuleId) {
 
-  // TODO: Get data based on deviceModuleId
-  // Endpoint: http://127.0.0.1:8000/api/v1/device-module-readings/
-  // device_module = deviceModuleId
-  // FIXME: Build the query string using the js libraries
-  const endpoint = deviceModuleEndpoint + "?device_module=" + deviceModuleId
-  // FIXME: Pass a reversed full url through
-  // const urlDeviceModuleReading = section.getAttribute("data-json-feed")
+  // const url = section.getAttribute("data-json-feed")
+  const url = "http://localhost:8000//api/v1/device-module-readings/"
+  const endpoint = new URL(url);
+  endpoint.searchParams.append("device_module", deviceModuleId);
+
+  // FIXME: Need data output and need headings from Schema
+
+  // const urlDeviceModuleReading =
   let endpointDeviceModuleReading = new Request(endpoint);
 
   response = fetch(endpointDeviceModuleReading)
@@ -90,12 +91,12 @@ let loadTableData = function (deviceModuleId) {
       return response.json();
     })
     .then((response) => {
-      drawTable(response)
+      drawTable(response, deviceModuleId)
     });
 }
 
 
-let drawTable = function (data) {
+let drawTable = function (dataset, deviceModuleId) {
   // First empty the table container
   tableContainer.textContent = ""
 
@@ -104,33 +105,70 @@ let drawTable = function (data) {
   // Table Header
   let headerRow = document.createElement("tr");
 
-  // TODO: Build the header rows from the data, for now use the first row.
-  //  For other projects this was supplied in the endpoint
+  // TODO: Build the header rows from the schema, or build a full list in th
   // Could use the schema, what about historic data that may violate it,
-  // we only validate this when historic data is updated
+  // Built as a ist because the pagination would hammer the device modiule
+  const headingFields = dataset[0];
+
+  // TODO: Build the header rows from the schema, or build a full list in the backend and supply in the response
+  // Could use the schema, what about historic data that may violate it,
   // Built as a ist because the pagination would hammer the device modiule
 
-  let deviceModules = storeDeviceModules
+  schema = deviceModuleSchemaMap[deviceModuleId]
 
+  let dataFields = []
+  if (schema) {
+    extra_fields = Object.keys(schema.properties)
+    dataFields = [...dataFields, ...extra_fields];
+    dataFields = [...new Set(dataFields)]
+  }
 
-  console.log("Drawing table with data: ", data)
+  // FIXME: Need human readable headings, probably needs to come from the BE to be
+  for (let heading in headingFields) {
 
-  for (let heading in data[0]) {
+    if (heading == "data") {
 
-    let headerItem = document.createElement("th");
-    headerItem.textContent = heading
-    headerRow.append(headerItem);
+      for (let headingIndex in dataFields) {
+        const heading = dataFields[headingIndex]
+        let headerItem = document.createElement("th");
+        headerItem.textContent = heading
+        headerRow.append(headerItem);
+      }
+    } else {
+      let headerItem = document.createElement("th");
+      headerItem.textContent = heading
+      headerRow.append(headerItem);
+    }
   }
 
   table.append(headerRow);
 
   // Table Contents
-  for (let row in data) {
+  for (let rowIndex in dataset) {
+    const row = dataset[rowIndex]
     let contentRow = document.createElement("tr");
-    for (let reading in data[row]) {
-      let contentItem = document.createElement("td");
-      contentItem.textContent = data[row][reading]
-      contentRow.append(contentItem);
+    for (let reading in row) {
+      const fieldValue = row[reading]
+      if (typeof fieldValue == "object") {
+        for (let dataFieldIndex in dataFields) {
+          let contentItem = document.createElement("td");
+          const dataField = dataFields[dataFieldIndex]
+
+          // FIXME: Need to change the null value in the project to be an empty object
+          let mydict = {}
+          if (fieldValue != null) {
+            if (fieldValue.hasOwnProperty(dataField)) {
+              contentItem.textContent = fieldValue[dataField]
+            }
+          }
+
+          contentRow.append(contentItem);
+        }
+      } else {
+        let contentItem = document.createElement("td");
+        contentItem.textContent = row[reading]
+        contentRow.append(contentItem);
+      }
     }
     table.append(contentRow);
   }

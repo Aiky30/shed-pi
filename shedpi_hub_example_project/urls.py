@@ -4,11 +4,20 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 
-from shedpi_hub_dashboard.views import DeviceModuleReadingViewSet, DeviceModuleViewSet
+from shedpi_hub_dashboard.views import (
+    DeviceModuleReadingViewSet,
+    DeviceModuleViewSet,
+    ExperimentalViewSet,
+)
 
 router = routers.DefaultRouter()
 router.register(r"device-module", DeviceModuleViewSet)
 router.register(r"device-module-readings", DeviceModuleReadingViewSet)
+router.register(
+    r"device-module-readings-paginated",
+    ExperimentalViewSet,
+    basename="devicemodulereading-paginated",
+)
 
 urlpatterns = [
     *[

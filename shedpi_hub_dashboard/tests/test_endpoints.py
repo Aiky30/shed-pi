@@ -1,8 +1,8 @@
 import json
 
 import pytest
-from django.urls import reverse
 from rest_framework import status
+from rest_framework.reverse import reverse
 
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
@@ -68,11 +68,11 @@ def test_device_module_readings_list_pagination(client):
         110, device_module=device_module, data={"temperature": "20"}
     )
 
-    url = reverse("devicemodulereading-list")
+    url = reverse("devicemodulereading-paginated-list")
     response = client.get(url, data={"device_module": device_module.id})
 
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.data) == 100
+    assert len(response.data["results"]) == 100
 
 
 @pytest.mark.django_db

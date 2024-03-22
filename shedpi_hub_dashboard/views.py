@@ -1,5 +1,6 @@
 from django.template.response import TemplateResponse
 from rest_framework import mixins, viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import GenericViewSet
 
 from .models import DeviceModule, DeviceModuleReading
@@ -40,7 +41,7 @@ class DeviceModuleReadingViewSet(viewsets.ModelViewSet):
         return self.queryset
 
 
-class ExperimentalViewSet(
+class DeviceModuleReadingPaginatedViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
@@ -51,10 +52,9 @@ class ExperimentalViewSet(
     pagination_class = CreatedAtBasedCursorPagination
 
     def get_queryset(self):
-        # FIXME: Validate that the user supplied this get param!
         device_module_id = self.request.query_params.get("device_module")
 
-        if device_module_id:
-            return self.queryset.filter(device_module=device_module_id)
+        if not device_module_id:
+            raise ValidationError({"device_module": "Not supplied"})
 
-        return self.queryset
+        return self.queryset.filter(device_module=device_module_id)

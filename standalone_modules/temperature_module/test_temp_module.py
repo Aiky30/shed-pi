@@ -1,8 +1,10 @@
+import json
 from unittest.mock import Mock, patch
 
 import pytest
-from django.urls import reverse
+from rest_framework import status
 
+from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
 )
@@ -12,12 +14,6 @@ from .temp_logger import TempProbe
 
 @patch("standalone_modules.temperature_module.temp_logger.Path")
 def test_temp_probe_reading_happy_path(mocked_path):
-    """
-    TODO:
-    - Mock rpi
-    - Mock device output
-    - Test the case for YES from the module
-    """
     # FIXME: Get the actual readout from the modules
     probe = TempProbe()
     probe.read_temp_raw = Mock(
@@ -75,8 +71,10 @@ def test_temp_probe_reading_invalid_reading_missing_expected_params(mocked_path)
     probe.read_temp_raw.call_count == 2
 
 
+# Integration test, TODO: Move to Integration folder
+@patch("standalone_modules.temperature_module.temp_logger.Path")
 @pytest.mark.django_db
-def test_temperature_module_reading_submission(client):
+def test_temperature_module_reading_submission(mocked_path, live_server):
     schema = {
         "$id": "https://example.com/person.schema.json",
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -88,14 +86,25 @@ def test_temperature_module_reading_submission(client):
     }
     device_module = DeviceModuleFactory(schema=schema)
 
-    # url = reverse("devicemodulereading-detail", kwargs={"pk": device_module.id})
-    url = reverse("devicemodulereading-list")
-    data = {"temperature": "20.001"}
+    probe = TempProbe()
+    probe.device_id = device_module.id
+    probe.base_url = live_server.url
+    probe.read_temp_raw = Mock(
+        return_value=[
+            "YES",
+            "t=12345",
+        ]
+    )
 
-    # The below is what the module will recieve and we will be able to see that it has somehow
-    # response = client.post(
-    #     url, data={"device_module": device_module.id, "data": json.dumps(data)}
-    # )
-    #
-    # assert response.status_code == status.HTTP_201_CREATED
-    # assert response.data["data"] == data
+    response = probe.submit_reading()
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response_data = json.loads(response.text)
+
+    # assert response_data
+
+    assert DeviceModuleReading.objects.filter(device_module=device_module).count() == 1
+
+
+# TODO: Test default endpoint address settings work in theory, because the test above overrides them

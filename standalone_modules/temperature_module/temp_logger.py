@@ -1,9 +1,12 @@
+import json
 import logging
 import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
+import requests
 
 """
 TODO:
@@ -19,11 +22,34 @@ logging.basicConfig(
     format="%(asctime)s:%(levelname)s:%(name)s:%(message)s",
 )
 logger = logging.getLogger("parent")
+
 TIME_TO_SLEEP = 60  # time in seconds
+
+HUB_ADDRESS = "http://localhost:8000"
+# HUB_ADDRESS = "http://192.168.2.130:8000"
+
+MODULE_POWER_ID = ""
+MODULE_TEMP_ID = ""
+MODULE_PROBE_TEMP_ID = ""
+
+
+def check_os():
+    return os.uname()[4].startswith("arm")
+
+
+def get_time():
+    now = datetime.now(timezone.utc)
+    current_time = now.strftime("%H:%M:%S")  # 24-Hour:Minute:Second
+    return current_time
 
 
 class TempProbe:
     def __init__(self):
+        self.device_id: int = MODULE_PROBE_TEMP_ID
+        # TODO: Make this an env var, it can then be overridden by the tests
+        self.base_url: str = HUB_ADDRESS
+        self.module_reading_endpoint: str = "/api/v1/device-module-readings/"
+
         base_dir = "/sys/bus/w1/devices/"
         device_folder = Path.glob(base_dir + "28*")[0]
         self.device_file = device_folder + "/w1_slave"
@@ -50,22 +76,40 @@ class TempProbe:
             temp_c = float(temp_string) / 1000.0
             return temp_c
 
+    def submit_reading(self) -> requests.Response:
+        """
+        Submits a reading to an external endpoint
 
-def check_os():
-    return os.uname()[4].startswith("arm")
+        :return:
+        """
+        probe_1_temp = self.read_temp()
+
+        logger.info(f"Submitting reading: {probe_1_temp}")
+
+        # Get a request client
+        # FIXME: Should this be a float or a string? Broke the test
+        data = {"temperature": str(probe_1_temp)}
+        endpoint = f"{self.base_url}{self.module_reading_endpoint}"
+        response = requests.post(
+            endpoint,
+            data={"device_module": self.device_id, "data": json.dumps(data)},
+        )
+
+        # TODO: Validate the response
+
+        return response
 
 
-def get_cpu_temp():
-    cpu_temp = os.popen("vcgencmd measure_temp").readline()
+class RPIDevice:
+    def __init__(self):
+        self.device_id = MODULE_POWER_ID
+        self.cpu_module_id = MODULE_TEMP_ID
 
-    # Convert the temp read from the OS to a clean float
-    return float(cpu_temp.replace("temp=", "").replace("'C\n", ""))
+    def get_cpu_temp(self):
+        cpu_temp = os.popen("vcgencmd measure_temp").readline()
 
-
-def get_time():
-    now = datetime.now(timezone.utc)
-    current_time = now.strftime("%H:%M:%S")  # 24-Hour:Minute:Second
-    return current_time
+        # Convert the temp read from the OS to a clean float
+        return float(cpu_temp.replace("temp=", "").replace("'C\n", ""))
 
 
 def main():
@@ -76,11 +120,14 @@ def main():
         return
 
     temp_probe = TempProbe()
+    rpi_device = RPIDevice()
 
     while True:
-        pi_temp = get_cpu_temp()
-        probe_1_temp = temp_probe.read_temp()
-        logger.info(f"Pi temp: {pi_temp}, probe_1 temp: {probe_1_temp}")
+        pi_temp = rpi_device.get_cpu_temp()
+
+        logger.info(f"Pi temp: {pi_temp}")
+
+        temp_probe.submit_reading()
 
         time.sleep(TIME_TO_SLEEP)
 

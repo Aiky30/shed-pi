@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 from jsonschema import validate
 
 from shedpi_hub_dashboard.forms.fields import PrettyJsonField
@@ -37,7 +38,7 @@ class DeviceModuleReading(models.Model):
         help_text="A device whose readings were collected.",
     )
     data = PrettyJsonField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def validate_data(self) -> None:
         """

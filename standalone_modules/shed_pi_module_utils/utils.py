@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime, timezone
 
@@ -15,3 +16,11 @@ def get_time():
     now = datetime.now(timezone.utc)
     current_time = now.strftime("%H:%M:%S")  # 24-Hour:Minute:Second
     return current_time
+
+
+logging.basicConfig(
+    filename="/var/log/shed-pi.log",
+    level=logging.INFO,
+    format="%(asctime)s:%(levelname)s:%(name)s:%(message)s",
+)
+logger = logging.getLogger("parent")

@@ -19,18 +19,13 @@ A device contains a protocol, and can utilise modules
 
 1. Fix: Bug: The script startup gets an incorrect time (Hasn't yet got the internet time)
 2. Instructions on pinout
-
-# TODO: General Integration test for the logger using a fake module
-
-# TODO: Test default endpoint address settings work in theory, because the test above overrides them
-
-# TODO: Device startup and shutdown needs a unit test
-
-# TOOD: Temp probe should be a fixture
-
-# TOOD: CPU temp probe should be a fixture
-
-# TODO: Split the RPI and custom temp module, they will be standalone modules, New RPI module with it's own CPU temp component
+3. Tests for the utils and base protocol
+4. Extend Baseprotocol with a reusable run method
+5. General Integration test for the logger using a fake module
+6. Test default endpoint address settings work in theory, because the test above overrides them
+7. Device startup and shutdown needs a unit test
+8. Temp probe should be a fixture
+9. CPU temp probe should be a fixture
 
 ### Wish list:
 

@@ -11,12 +11,12 @@ from shedpi_hub_dashboard.tests.utils.factories import (
 from standalone_modules.shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
-from standalone_modules.temperature_module.temp_logger import (
+from standalone_modules.temperature_module.temperature_probe import (
     TempProbe,
 )
 
 
-@patch("standalone_modules.temperature_module.temp_logger.Path")
+@patch("standalone_modules.temperature_module.temperature_probe.Path")
 @pytest.mark.django_db
 def test_temperature_module_reading_submission(mocked_path, live_server):
     schema = {

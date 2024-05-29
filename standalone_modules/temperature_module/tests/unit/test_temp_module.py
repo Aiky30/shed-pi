@@ -9,13 +9,13 @@ from shedpi_hub_dashboard.tests.utils.factories import (
 from standalone_modules.shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
-from standalone_modules.temperature_module.temp_logger import (
-    DeviceProtocol,
+from standalone_modules.temperature_module.device_protocol import DeviceProtocol
+from standalone_modules.temperature_module.temperature_probe import (
     TempProbe,
 )
 
 
-@patch("standalone_modules.temperature_module.temp_logger.Path")
+@patch("standalone_modules.temperature_module.temperature_probe.Path")
 def test_temp_probe_reading_happy_path(mocked_path):
     # FIXME: Get the actual readout from the modules
     probe = TempProbe(submission_service=Mock())
@@ -30,7 +30,7 @@ def test_temp_probe_reading_happy_path(mocked_path):
     assert temp == 12.345
 
 
-@patch("standalone_modules.temperature_module.temp_logger.Path")
+@patch("standalone_modules.temperature_module.temperature_probe.Path")
 def test_temp_probe_reading_invalid_reading(mocked_path):
     """
     TODO:
@@ -49,7 +49,7 @@ def test_temp_probe_reading_invalid_reading(mocked_path):
         probe.read_temp()
 
 
-@patch("standalone_modules.temperature_module.temp_logger.Path")
+@patch("standalone_modules.temperature_module.temperature_probe.Path")
 def test_temp_probe_reading_invalid_reading_missing_expected_params(mocked_path):
     """
     YES is missing from the data feed
@@ -74,7 +74,7 @@ def test_temp_probe_reading_invalid_reading_missing_expected_params(mocked_path)
     probe.read_temp_raw.call_count == 2
 
 
-@patch("standalone_modules.temperature_module.temp_logger.Path")
+@patch("standalone_modules.temperature_module.temperature_probe.Path")
 @pytest.mark.django_db
 def test_temp_logger(mocked_path, live_server):
     # Submission service
@@ -103,22 +103,8 @@ def test_temp_logger(mocked_path, live_server):
             "t=12345",
         ]
     )
-    # RPI CPU temp probe
-    rpi_schema = {
-        "$id": "https://example.com/person.schema.json",
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "Reading",
-        "type": "object",
-        "properties": {
-            "temperature": {"type": "string", "description": "The Temperature"},
-        },
-    }
-    rpi_cpu_temp = DeviceModuleFactory(schema=rpi_schema)
-    device_protocol.rpi_device.device_id = rpi_cpu_temp.id
-    device_protocol.rpi_device.get_cpu_temp = Mock(return_value=10.0)
 
     device_protocol.run()
 
     # Check that the data was submitted
-    assert DeviceModuleReading.objects.filter(device_module=rpi_cpu_temp).count() == 1
     assert DeviceModuleReading.objects.filter(device_module=temp_probe).count() == 1

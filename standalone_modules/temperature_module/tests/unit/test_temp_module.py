@@ -1,15 +1,18 @@
-import json
 from unittest.mock import Mock, patch
 
 import pytest
-from rest_framework import status
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
 )
-
-from .temp_logger import ReadingSubmissionService, TempProbe
+from standalone_modules.shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
+)
+from standalone_modules.temperature_module.temp_logger import (
+    DeviceProtocol,
+    TempProbe,
+)
 
 
 @patch("standalone_modules.temperature_module.temp_logger.Path")
@@ -71,10 +74,18 @@ def test_temp_probe_reading_invalid_reading_missing_expected_params(mocked_path)
     probe.read_temp_raw.call_count == 2
 
 
-# Integration test, TODO: Move to Integration folder
 @patch("standalone_modules.temperature_module.temp_logger.Path")
 @pytest.mark.django_db
-def test_temperature_module_reading_submission(mocked_path, live_server):
+def test_temp_logger(mocked_path, live_server):
+    # Submission service
+    submission_service = ReadingSubmissionService()
+    submission_service.base_url = live_server.url
+    # Device Protocol
+    device_protocol = DeviceProtocol(submission_service=submission_service)
+    # Override the loop timer for the test to end instantly
+    device_protocol.submission_delay = 0
+    device_protocol.stop = Mock(side_effect=[False, True])
+    # Temp probe
     schema = {
         "$id": "https://example.com/person.schema.json",
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -84,35 +95,30 @@ def test_temperature_module_reading_submission(mocked_path, live_server):
             "temperature": {"type": "string", "description": "The Temperature"},
         },
     }
-    device_module = DeviceModuleFactory(schema=schema)
-    submission_service = ReadingSubmissionService()
-    # Override the serviuce url
-    submission_service.base_url = live_server.url
-
-    probe = TempProbe(submission_service=submission_service)
-    # Override the module id
-    probe.device_id = device_module.id
-
-    probe.read_temp_raw = Mock(
+    temp_probe = DeviceModuleFactory(schema=schema)
+    device_protocol.temp_probe.device_id = temp_probe.id
+    device_protocol.temp_probe.read_temp_raw = Mock(
         return_value=[
             "YES",
             "t=12345",
         ]
     )
+    # RPI CPU temp probe
+    rpi_schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reading",
+        "type": "object",
+        "properties": {
+            "temperature": {"type": "string", "description": "The Temperature"},
+        },
+    }
+    rpi_cpu_temp = DeviceModuleFactory(schema=rpi_schema)
+    device_protocol.rpi_device.device_id = rpi_cpu_temp.id
+    device_protocol.rpi_device.get_cpu_temp = Mock(return_value=10.0)
 
-    response = probe.submit_reading()
+    device_protocol.run()
 
-    assert response.status_code == status.HTTP_201_CREATED
-
-    response_data = json.loads(response.text)
-
-    # assert response_data
-
-    assert DeviceModuleReading.objects.filter(device_module=device_module).count() == 1
-
-
-# TODO: General Integration test for the logger using a fake module
-# TODO: Test default endpoint address settings work in theory, because the test above overrides them
-
-# TODO: Device Protocol needs an integration test
-# Device startup and shutdown needs a unit test
+    # Check that the data was submitted
+    assert DeviceModuleReading.objects.filter(device_module=rpi_cpu_temp).count() == 1
+    assert DeviceModuleReading.objects.filter(device_module=temp_probe).count() == 1

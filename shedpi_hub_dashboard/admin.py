@@ -1,4 +1,7 @@
+from typing import ClassVar
+
 from django.contrib import admin
+from django.contrib.admin.options import InlineModelAdmin
 
 from .models import Device, DeviceModule, DeviceModuleReading
 
@@ -26,7 +29,7 @@ class DeviceModuleReadingInlineAdmin(admin.TabularInline):
 
 @admin.register(DeviceModule)
 class DeviceModuleAdmin(admin.ModelAdmin):
-    inlines: list = [DeviceModuleReadingInlineAdmin]
+    inlines: ClassVar[list[InlineModelAdmin]] = [DeviceModuleReadingInlineAdmin]
 
 
 @admin.register(DeviceModuleReading)

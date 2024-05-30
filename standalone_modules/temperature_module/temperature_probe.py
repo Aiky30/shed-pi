@@ -12,7 +12,6 @@ from standalone_modules.shed_pi_module_utils.data_submission import (
 class TempProbe:
     def __init__(self, submission_service: ReadingSubmissionService):
         self.device_id: int = None
-        # TODO: Make this an env var, it can then be overridden by the tests
         base_dir = "/sys/bus/w1/devices/"
         device_folder = Path.glob(base_dir + "28*")[0]
         self.device_file = device_folder + "/w1_slave"

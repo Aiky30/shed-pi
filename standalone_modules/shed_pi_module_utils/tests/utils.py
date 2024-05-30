@@ -23,7 +23,6 @@ class FakeModule:
         """
         reading = self.read_fake_data()
 
-        # FIXME: Should this be a float or a string? Broke the test
         data = {"temperature": str(reading)}
 
         response = self.submission_service.submit(

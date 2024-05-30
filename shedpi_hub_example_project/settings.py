@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "shedpi_hub_dashboard.apps.ShedpiHubDashboardConfig",
-    "historic_data_import.apps.HistoricDataImportConfig",
     "rest_framework",
 ]
 

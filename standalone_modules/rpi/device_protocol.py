@@ -15,6 +15,7 @@ class DeviceProtocol(BaseProtocol):
         # Installed modules
         self.rpi_device = RPIDevice(
             submission_service=submission_service,
+            # TODO: Add these values as configuration!!
             device_module_id=None,
             cpu_module_id=None,
         )

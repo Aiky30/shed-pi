@@ -20,10 +20,18 @@ class DeviceModuleReadingViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceModuleReadingSerializer
 
     def get_queryset(self):
-        # FIXME: Validate that the user supplied this get param!
+        # FIXME: Validate that the user supplied the get params!
         device_module_id = self.request.query_params.get("device_module")
+        start_date = self.request.query_params.get("start")
+        end_date = self.request.query_params.get("end")
 
-        if device_module_id:
+        if start_date and end_date and device_module_id:
+            return self.queryset.filter(
+                device_module=device_module_id,
+                created_at__date__range=(start_date, end_date),
+            )
+
+        elif device_module_id:
             return self.queryset.filter(device_module=device_module_id)
 
         return self.queryset

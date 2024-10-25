@@ -24,28 +24,22 @@ response = fetch(endpointDeviceModule)
   })
   .then((response) => {
     storeDeviceModules = response
-    drawDropdown()
-
+    drawDropdown();
+    bindFormSubmision();
     // Build schema map
 
   });
 
 let drawDropdown = function () {
   let data = storeDeviceModules
-  let dropdown = document.createElement("select");
+  let dropdown = document.getElementById("form-dropdown");
 
-  // Table Header
+  // Empty the dropdown items
+  dropdown.innerHTML = '';
+
   let emptySelector = document.createElement("option");
   emptySelector.textContent = "Please Select"
   dropdown.append(emptySelector)
-
-  dropdown.addEventListener('change', function (e) {
-    optionId = this.selectedOptions[0].id
-
-    if (optionId) {
-      loadTableData(optionId)
-    }
-  });
 
   for (let deviceModuleIndex in data) {
     const deviceModule = data[deviceModuleIndex]
@@ -59,24 +53,48 @@ let drawDropdown = function () {
 
     dropdown.append(optionElement);
   }
+}
 
-  // Add the drpdown to the page
-  deviceModuleSelectorContainer.append(dropdown);
+/* Form submission */
+
+let bindFormSubmision = function () {
+  let submitControl = document.getElementById("form-submit");
+  let dropdown = document.getElementById("form-dropdown");
+
+  submitControl.addEventListener('click', function (e) {
+    e.preventDefault()
+
+    // TODO: Run field validation
+
+    let optionId = dropdown.selectedOptions[0].id
+
+    // Start and end
+    let startField = document.getElementById("startDate");
+    let endField = document.getElementById("endDate");
+
+    if (optionId) {
+      loadTableData(optionId, startField.value, endField.value)
+    }
+  });
 };
 
 /* Table visual */
+
+// TOOD: Get a line chart working: https://visjs.github.io/vis-timeline/docs/graph2d/
 
 // Create table container
 const tableContainer = document.createElement("div");
 section.append(tableContainer);
 
-let loadTableData = function (deviceModuleId) {
+let loadTableData = function (deviceModuleId, startDate, endDate) {
 
   // const url = section.getAttribute("data-json-feed")
   const url = window.location.origin + "/api/v1/device-module-readings/"
   const endpoint = new URL(url);
   endpoint.searchParams.append("device_module", deviceModuleId);
   endpoint.searchParams.append("format", "json");
+  endpoint.searchParams.append("start", startDate);
+  endpoint.searchParams.append("end", endDate);
 
   // FIXME: Need data output and need headings from Schema
 

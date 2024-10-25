@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
 
+from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
     DeviceModuleReadingFactory,
@@ -149,3 +150,4 @@ def test_device_module_reading_submission(client):
 
     assert response.status_code == status.HTTP_201_CREATED
     assert response.data["data"] == data
+    assert DeviceModuleReading.objects.filter(device_module=device_module).count() == 1

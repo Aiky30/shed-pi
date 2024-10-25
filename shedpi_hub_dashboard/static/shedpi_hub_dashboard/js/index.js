@@ -73,9 +73,10 @@ section.append(tableContainer);
 let loadTableData = function (deviceModuleId) {
 
   // const url = section.getAttribute("data-json-feed")
-  const url = "http://localhost:8000//api/v1/device-module-readings/"
+  const url = window.location.origin + "/api/v1/device-module-readings/"
   const endpoint = new URL(url);
   endpoint.searchParams.append("device_module", deviceModuleId);
+  endpoint.searchParams.append("format", "json");
 
   // FIXME: Need data output and need headings from Schema
 

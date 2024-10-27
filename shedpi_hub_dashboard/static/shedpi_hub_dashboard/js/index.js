@@ -1,6 +1,17 @@
 import {dataTable} from "./modules/table.js";
 import {LineChart} from "./modules/chart.js";
 
+/*
+Design of the widgets:
+
+All widgets
+ - Select fields to map the data to
+ - Type of widget
+
+Temperature probe:
+ - Average of the day
+ - All entries for the day
+*/
 
 const contents = document.getElementsByClassName("contents")[0];
 let section = contents

@@ -49,8 +49,8 @@ class LineChart {
     let data = this.mapDataSet(dataset, schema);
 
     // Declare the chart dimensions and margins.
-    const width = 928;
-    const height = 500;
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
     const marginTop = 20;
     const marginRight = 30;
     const marginBottom = 30;

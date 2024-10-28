@@ -4,6 +4,9 @@ import {LineChart} from "./modules/chart.js";
 /*
 Design of the widgets:
 
+Dashboard Controls
+- Filter by day, week, month
+
 All widgets
  - Select fields to map the data to
  - Type of widget
@@ -20,10 +23,8 @@ let section = contents
 let storeDeviceModules = []
 let deviceModuleSchemaMap = {}
 
-
 let chart = new LineChart()
 let table = new dataTable()
-
 
 /* Drop down selection */
 // Create dropdown container
@@ -44,8 +45,6 @@ let response = fetch(endpointDeviceModule)
     storeDeviceModules = response
     drawDropdown();
     bindFormSubmision();
-    // Build schema map
-
   });
 
 let drawDropdown = function () {

@@ -56,7 +56,7 @@ ROOT_URLCONF = "shedpi_hub_example_project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [""],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

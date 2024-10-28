@@ -6,7 +6,16 @@ from .serlializers import DeviceModuleReadingSerializer, DeviceModuleSerializer
 
 
 def index(request):
-    response = TemplateResponse(request, "shedpi_hub_dashboard/index.html", {})
+    response = TemplateResponse(
+        request, "shedpi_hub_dashboard/templates/index.html", {}
+    )
+    return response
+
+
+def reading(request):
+    response = TemplateResponse(
+        request, "shedpi_hub_dashboard/templates/reading.html", {}
+    )
     return response
 
 

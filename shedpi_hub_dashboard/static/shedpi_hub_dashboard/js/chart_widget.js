@@ -1,21 +1,16 @@
 import {LineChart} from "./modules/chart.js";
 
-let chart = new LineChart()
-
-// TODO: DB Entry that controls this config, the page will then spit them out onto the page via backend,
-//      we then loop through each class with config embedded
-const widgetConfig = {
-  // "type": "",
-  "deviceModuleId": "a62408c2-bc89-48e2-8c23-9494bbf33cb7",
-  "startDate": "2024-01-25",
-  "endDate": "2024-02-24",
-}
-
+const widgetTypeLineChart = "lineChart"
 
 class Widget {
   constructor(config) {
-    this.container = document.getElementById("chartContainer");
-    this.config = widgetConfig
+    this.config = config
+    const container = document.getElementById(this.config.id);
+
+    this.chart;
+    if (this.config.chartType == widgetTypeLineChart) {
+      this.chart = new LineChart(container)
+    }
   }
 
   async getDeviceData() {
@@ -72,9 +67,31 @@ class Widget {
     const deviceData = await this.getDeviceData()
     const deviceReadings = await this.getDeviceReadings()
 
-    chart.draw(deviceReadings, deviceData.schema)
+    this.chart.draw(deviceReadings, deviceData.schema)
   }
 }
 
-const widget = new Widget(widgetConfig)
-widget.render()
+
+// TODO: DB Entry that controls this config, the page will then spit them out onto the page via backend,
+//      we then loop through each class with config embedded
+const widgetConfigs = [
+  {
+    "id": "chartContainer1",
+    "chartType": widgetTypeLineChart,
+    "deviceModuleId": "c2f30e74-4708-4dff-9347-466563e353c8",
+    "startDate": "2024-01-25",
+    "endDate": "2024-02-24"
+  },
+  {
+    "id": "chartContainer2",
+    "chartType": widgetTypeLineChart,
+    "deviceModuleId": "a62408c2-bc89-48e2-8c23-9494bbf33cb7",
+    "startDate": "2024-01-25",
+    "endDate": "2024-02-24"
+  }
+];
+
+widgetConfigs.forEach((widgetConfig) => {
+  const widget = new Widget(widgetConfig)
+  widget.render()
+});

@@ -3,8 +3,8 @@ import {getSchemaDataFields} from "./utils.js";
 /* Chart visual */
 
 class LineChart {
-  constructor() {
-    this.container = document.getElementById("chartContainer");
+  constructor(container) {
+    this.container = container;
   }
 
   mapDataSet(dataset, schema) {

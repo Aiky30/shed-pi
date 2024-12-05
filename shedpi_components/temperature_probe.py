@@ -8,6 +8,8 @@ from standalone_modules.shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
 
+# TODO: Remove the submission_service from the component, it's an anti pattern
+
 
 class TempProbe:
     def __init__(self, submission_service: ReadingSubmissionService):

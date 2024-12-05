@@ -1,5 +1,3 @@
-from warnings import deprecated
-
 from standalone_modules.shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
@@ -33,6 +31,8 @@ class BaseProtocol:
         """
         ...
 
-    @deprecated("Deprecated run method is replaced by start")
     def run(self) -> None:
+        """
+        @deprecated("Deprecated run method is replaced by start")
+        """
         raise NotImplementedError

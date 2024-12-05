@@ -1,11 +1,11 @@
 import time
 
+from shedpi_components.temperature_probe import TempProbe
 from standalone_modules.shed_pi_module_utils.base_protocol import BaseProtocol
 from standalone_modules.shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
 from standalone_modules.shed_pi_module_utils.utils import check_arch_is_arm, logger
-from standalone_modules.temperature_module.temperature_probe import TempProbe
 
 TIME_TO_SLEEP = 60  # time in seconds
 

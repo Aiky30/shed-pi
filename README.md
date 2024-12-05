@@ -15,6 +15,21 @@ Automated use cases:
 The Hub contains a Protocol, and can utilise modules
 A device contains a protocol, and can utilise modules
 
+Decisions to be made:
+
+1. Proposed change of device and module layout:
+   A Device contains a bunch of modules, a module contains a bunch of components
+    - Device (RPI, Arduino)
+    - Module (AM2302)
+    - Glue to connect modules to the device!
+        - Cons:
+            - Configuration complexity
+        - Pros:
+            - Reusable modules 2 modules for one data record - Temp and Humidity
+            - Modules are small and can contain their own tests
+            - Naming of the glue? That is currently modules, could make a new dir for components that are self
+              contained!
+
 ## TODO:
 
 1. Fix: Bug: The script startup gets an incorrect time (Hasn't yet got the internet time)

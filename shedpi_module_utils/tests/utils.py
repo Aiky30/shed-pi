@@ -1,6 +1,5 @@
 import requests
-
-from standalone_modules.shed_pi_module_utils.data_submission import (
+from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
 

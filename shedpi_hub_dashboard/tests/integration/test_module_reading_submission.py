@@ -3,16 +3,16 @@ from unittest.mock import Mock, patch
 
 import pytest
 from rest_framework import status
-
-from shedpi_components.temperature_probe import (
-    TempProbe,
+from shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
 )
+
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
 )
-from standalone_modules.shed_pi_module_utils.data_submission import (
-    ReadingSubmissionService,
+from shedpi_module_utils.shedpi_components.ds18b20 import (
+    TempProbe,
 )
 
 

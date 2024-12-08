@@ -1,6 +1,9 @@
 from unittest.mock import Mock
 
 import pytest
+from shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
+)
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
@@ -8,9 +11,6 @@ from shedpi_hub_dashboard.tests.utils.factories import (
 )
 from standalone_modules.rpi.device_protocol import (
     DeviceProtocol,
-)
-from standalone_modules.shed_pi_module_utils.data_submission import (
-    ReadingSubmissionService,
 )
 
 

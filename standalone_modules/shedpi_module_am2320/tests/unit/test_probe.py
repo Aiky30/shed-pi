@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from shedpi_components.AM2302 import AM2320
+from shedpi_module_utils.shedpi_components import AM2320
 
 
 @patch("shedpi_components.AM2302.posix")
@@ -28,4 +28,4 @@ def test_probe_reading_happy_path(mocked_posix, mocked_ioctl):
     # )
 
     mocked_posix.read = Mock(return_value="0000000")
-    reading = probe.read_sensor()
+    probe.read_sensor()

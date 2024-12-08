@@ -2,15 +2,15 @@ import json
 
 import pytest
 from rest_framework import status
+from shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
+)
+from shed_pi_module_utils.tests.utils import FakeModule
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
 )
-from standalone_modules.shed_pi_module_utils.data_submission import (
-    ReadingSubmissionService,
-)
-from standalone_modules.shed_pi_module_utils.tests.utils import FakeModule
 
 
 @pytest.mark.django_db

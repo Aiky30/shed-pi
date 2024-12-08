@@ -12,5 +12,5 @@ def client():
 # Component Temp probe
 @pytest.fixture
 def temp_probe_path():
-    with patch("shedpi_components.temperature_probe.Path"):
+    with patch("shed_pi_module_utils.shed_pi_components.ds18b20.Path"):
         yield

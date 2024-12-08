@@ -1,5 +1,5 @@
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from rest_framework import status
@@ -16,9 +16,8 @@ from shedpi_hub_dashboard.tests.utils.factories import (
 )
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
 @pytest.mark.django_db
-def test_temperature_module_reading_submission(mocked_path, live_server):
+def test_temperature_module_reading_submission(temp_probe_path, live_server):
     schema = {
         "$id": "https://example.com/person.schema.json",
         "$schema": "https://json-schema.org/draft/2020-12/schema",

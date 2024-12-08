@@ -1,6 +1,6 @@
 import time
 
-from shed_pi_module_utils import BaseProtocol
+from shed_pi_module_utils.base_protocol import BaseProtocol
 from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )

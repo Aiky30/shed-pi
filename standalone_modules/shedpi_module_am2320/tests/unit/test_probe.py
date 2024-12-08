@@ -1,8 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
-
-from shedpi_module_utils.shedpi_components import AM2320
+from shed_pi_module_utils.shedpi_components import AM2320
 
 
 @patch("shedpi_components.AM2302.posix")

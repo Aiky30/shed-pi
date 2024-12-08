@@ -6,13 +6,13 @@ from rest_framework import status
 from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
+from shed_pi_module_utils.shed_pi_components.ds18b20 import (
+    TempProbe,
+)
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
-)
-from shedpi_module_utils.shedpi_components.ds18b20 import (
-    TempProbe,
 )
 
 
@@ -33,7 +33,7 @@ def test_temperature_module_reading_submission(mocked_path, live_server):
     # Override the serviuce url
     submission_service.base_url = live_server.url
 
-    probe = TempProbe(submission_service=submission_service)
+    probe = TempProbe()
     # Override the module id
     probe.device_id = device_module.id
 

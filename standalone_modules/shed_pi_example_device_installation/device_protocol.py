@@ -1,12 +1,12 @@
 import time
 
-from shed_pi_module_utils import BaseProtocol
+from shed_pi_module_utils.base_protocol import BaseProtocol
 from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
+from shed_pi_module_utils.shed_pi_components.ds18b20 import TempProbe
 from shed_pi_module_utils.utils import check_arch_is_arm, logger
 
-from shedpi_module_utils.shedpi_components.ds18b20 import TempProbe
 from standalone_modules.rpi.device import RPIDevice
 
 TIME_TO_SLEEP = 60  # time in seconds

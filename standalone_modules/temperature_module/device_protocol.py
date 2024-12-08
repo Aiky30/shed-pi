@@ -1,11 +1,11 @@
 import time
 
+import requests
 from shed_pi_module_utils import BaseProtocol
 from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
 from shed_pi_module_utils.utils import check_arch_is_arm, logger
-
 from shedpi_module_utils.shedpi_components.ds18b20 import TempProbe
 
 TIME_TO_SLEEP = 60  # time in seconds
@@ -16,9 +16,28 @@ class DeviceProtocol(BaseProtocol):
         # Installed modules
         self.temp_probe = TempProbe(submission_service=submission_service)
         self.submission_delay = TIME_TO_SLEEP
+        self.submission_service = submission_service
+        self.device_id: int = None
 
     def stop(self):
         return False
+
+    def submit_reading(self) -> requests.Response:
+        """
+        Submits a reading to an external endpoint
+
+        :return:
+        """
+        probe_1_temp = self.temp_probe.read_temp()
+
+        # FIXME: Should this be a float or a string? Broke the test
+        data = {"temperature": str(probe_1_temp)}
+
+        response = self.submission_service.submit(
+            device_module_id=self.device_id, data=data
+        )
+
+        return response
 
     def run(self):
         while not self.stop():

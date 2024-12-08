@@ -17,6 +17,8 @@ class DeviceProtocol(BaseProtocol):
         self.temp_probe = TempProbe(submission_service=submission_service)
         self.submission_delay = TIME_TO_SLEEP
         self.submission_service = submission_service
+
+        # FIXME:
         self.device_id: int = None
 
     def stop(self):

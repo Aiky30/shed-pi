@@ -1,5 +1,7 @@
 import time
+from typing import Optional
 
+import requests
 from shed_pi_module_utils.base_protocol import BaseProtocol
 from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
@@ -13,15 +15,23 @@ TIME_TO_SLEEP = 60  # time in seconds
 
 
 class DeviceProtocol(BaseProtocol):
-    def __init__(self, submission_service: ReadingSubmissionService):
+    def __init__(
+        self,
+        submission_service: ReadingSubmissionService,
+        temp_probe_device_id: Optional[int] = None,
+    ):
         # Installed modules
-        self.temp_probe = TempProbe(submission_service=submission_service)
+        self.temp_probe = TempProbe()
         self.rpi_device = RPIDevice(
             submission_service=submission_service,
             device_module_id=None,
             cpu_module_id=None,
         )
         self.submission_delay = TIME_TO_SLEEP
+
+        # FIXME: Part of the migration of submission service out of the probe driver
+        self.submission_service = submission_service
+        self.temp_probe_device_id = temp_probe_device_id
 
     def stop(self):
         return False
@@ -32,13 +42,30 @@ class DeviceProtocol(BaseProtocol):
     def run(self):
         while not self.stop():
             # TODO: Would be nice to be able to bundle multiple calls into 1, less of an issue initially
-            self.temp_probe.submit_reading()
+            self.submit_reading()
             self.rpi_device.submit_reading()
 
             time.sleep(self.submission_delay)
 
     def shutdown(self):
         self.rpi_device.submit_device_shutdown()
+
+    def submit_reading(self) -> requests.Response:
+        """
+        Submits a reading to an external endpoint
+
+        :return:
+        """
+        probe_1_temp = self.temp_probe.read_temp()
+
+        # FIXME: Should this be a float or a string? Broke the test
+        data = {"temperature": str(probe_1_temp)}
+
+        response = self.submission_service.submit(
+            device_module_id=self.temp_probe_device_id, data=data
+        )
+
+        return response
 
 
 def main():

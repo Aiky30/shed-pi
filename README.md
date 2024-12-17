@@ -41,11 +41,11 @@ Decisions to be made:
 7. Device startup and shutdown needs a unit test
 8. Temp probe should be a fixture
 9. CPU temp probe should be a fixture
+10. Pass args from systemd through to run_protocol. This may need a cli, how would that work on a Pico?
 
 ### Wish list:
 
 - Poetry (Not started)
-- ASGI backend server (Daphne)
 - Native webcomponent FE with Bootstrap
 - pip install raspberry pi
 - modular components that are easy to install from a software and hardware perspective

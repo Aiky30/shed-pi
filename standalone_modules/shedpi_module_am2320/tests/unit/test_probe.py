@@ -1,35 +1,49 @@
 from unittest.mock import Mock, patch
 
-import pytest
-
 from standalone_modules.shedpi_module_am2320.device_protocol import (
     DeviceProtocol,
 )
 
 
-@patch("standalone_modules.shedpi_module_am2320.device_protocol.AM2320")
-def test_probe_reading_no_reading(mocked_am2320):
+@patch.object(
+    DeviceProtocol,
+    "_import_libraries",
+)
+def test_probe_reading__happy_path(mocked_am2320):
     mocked_submission_service = Mock()
-    probe = DeviceProtocol(submission_service=mocked_submission_service)
+    probe = DeviceProtocol(
+        device_module_id=99, submission_service=mocked_submission_service
+    )
+    mocked_component = Mock(
+        temperature=20.0,
+        relative_humidity=70.0,
+    )
+    probe.component = mocked_component
 
-    with pytest.raises(ValueError) as err:
-        probe.read_data()
+    probe.read_data()
 
-    assert err.value.args[0] == "First two read bytes are a mismatch"
+    mocked_submission_service.submit.assert_called_with(
+        device_module_id=99, data={"temperature": 20.0, "humidity": 70.0}
+    )
 
 
-#
-#
-# @patch("shedpi_components.AM2302.posix")
-# @patch("shedpi_components.AM2302.ioctl")
-# def test_probe_reading_happy_path(mocked_posix, mocked_ioctl):
-#     probe = AM2320()
-#     # probe.read_temp_raw = Mock(
-#     #     return_value=[
-#     #         "YES",
-#     #         "t=12345",
-#     #     ]
-#     # )
-#
-#     mocked_posix.read = Mock(return_value="0000000")
-#     probe.read_sensor()
+@patch.object(
+    DeviceProtocol,
+    "_import_libraries",
+)
+def test_probe_reading__missing_data(mocked_am2320):
+    mocked_submission_service = Mock()
+    probe = DeviceProtocol(
+        device_module_id=99, submission_service=mocked_submission_service
+    )
+    mocked_component = Mock(
+        temperature=None,
+        relative_humidity=None,
+    )
+    probe.component = mocked_component
+
+    probe.read_data()
+
+    mocked_submission_service.submit.assert_called_with(
+        device_module_id=99, data={"temperature": None, "humidity": None}
+    )

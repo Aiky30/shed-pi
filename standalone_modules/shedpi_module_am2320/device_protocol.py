@@ -1,7 +1,7 @@
 import time
 
-import adafruit_am2320
 import board
+from adafruit_am2320 import AM2320
 from shed_pi_module_utils.base_protocol import BaseProtocol
 from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
@@ -15,7 +15,7 @@ class DeviceProtocol(BaseProtocol):
         # create the I2C shared bus
         i2c = board.I2C()  # uses board.SCL and board.SDA
         # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
-        self.component = adafruit_am2320.AM2320(i2c)
+        self.component = AM2320(i2c)
 
         self.should_stop = False
 

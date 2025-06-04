@@ -1,0 +1,35 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block page_title %}
+  <h1 class="h2">Dashboard</h1>
+{% endblock page_title %}
+
+{% block content %}
+  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 g-2">
+    <div class="col">
+      <div class="card shadow-sm">
+        <svg id="chartContainer1">
+          <title>Placeholder</title>
+          <rect width="100%" height="100%" fill="#55595c"/>
+          <text x="50%" y="50%" fill="#eceeef" dy=".3em">Chart</text>
+        </svg>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card shadow-sm">
+        <svg id="chartContainer2">
+          <title>Placeholder</title>
+          <rect width="100%" height="100%" fill="#55595c"/>
+          <text x="50%" y="50%" fill="#eceeef" dy=".3em">Chart</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% block js_scripts %}
+  <script src="{% static 'shedpi_hub_dashboard/js/chart_widget.js' %}" type="module"></script>
+{% endblock js_scripts %}

@@ -1,22 +1,21 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
+from shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
+)
+from shed_pi_module_utils.shed_pi_components.ds18b20 import (
+    TempProbe,
+)
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
     DeviceModuleFactory,
 )
-from standalone_modules.shed_pi_module_utils.data_submission import (
-    ReadingSubmissionService,
-)
 from standalone_modules.temperature_module.device_protocol import DeviceProtocol
-from standalone_modules.temperature_module.temperature_probe import (
-    TempProbe,
-)
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
-def test_temp_probe_reading_happy_path(mocked_path):
+def test_temp_probe_reading_happy_path(temp_probe_path):
     # FIXME: Get the actual readout from the modules
     probe = TempProbe(submission_service=Mock())
     probe.read_temp_raw = Mock(
@@ -30,8 +29,7 @@ def test_temp_probe_reading_happy_path(mocked_path):
     assert temp == 12.345
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
-def test_temp_probe_reading_invalid_reading(mocked_path):
+def test_temp_probe_reading_invalid_reading(temp_probe_path):
     """
     TODO:
     - Find what a real invalid reading looks like
@@ -49,8 +47,7 @@ def test_temp_probe_reading_invalid_reading(mocked_path):
         probe.read_temp()
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
-def test_temp_probe_reading_invalid_reading_missing_expected_params(mocked_path):
+def test_temp_probe_reading_invalid_reading_missing_expected_params(temp_probe_path):
     """
     YES is missing from the data feed
     """
@@ -74,9 +71,8 @@ def test_temp_probe_reading_invalid_reading_missing_expected_params(mocked_path)
     probe.read_temp_raw.call_count == 2
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
 @pytest.mark.django_db
-def test_temp_logger(mocked_path, live_server):
+def test_temp_logger(temp_probe_path, live_server):
     # Submission service
     submission_service = ReadingSubmissionService()
     submission_service.base_url = live_server.url

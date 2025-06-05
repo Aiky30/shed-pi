@@ -1,6 +1,9 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
+from shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
+)
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
@@ -9,22 +12,10 @@ from shedpi_hub_dashboard.tests.utils.factories import (
 from standalone_modules.shed_pi_example_device_installation.device_protocol import (
     DeviceProtocol,
 )
-from standalone_modules.shed_pi_module_utils.data_submission import (
-    ReadingSubmissionService,
-)
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
 @pytest.mark.django_db
-def test_device_protocol(mocked_path, live_server):
-    # Submission service
-    submission_service = ReadingSubmissionService()
-    submission_service.base_url = live_server.url
-    # Device Protocol
-    device_protocol = DeviceProtocol(submission_service=submission_service)
-    # Override the loop timer for the test to end instantly
-    device_protocol.submission_delay = 0
-    device_protocol.stop = Mock(side_effect=[False, True])
+def test_device_protocol(temp_probe_path, live_server):
     # Temp probe
     schema = {
         "$id": "https://example.com/person.schema.json",
@@ -36,7 +27,17 @@ def test_device_protocol(mocked_path, live_server):
         },
     }
     temp_probe = DeviceModuleFactory(schema=schema)
-    device_protocol.temp_probe.device_id = temp_probe.id
+    # Submission service
+    submission_service = ReadingSubmissionService()
+    submission_service.base_url = live_server.url
+    # Device Protocol
+    device_protocol = DeviceProtocol(
+        submission_service=submission_service, temp_probe_device_id=temp_probe.id
+    )
+    # Override the loop timer for the test to end instantly
+    device_protocol.submission_delay = 0
+    device_protocol.stop = Mock(side_effect=[False, True])
+
     device_protocol.temp_probe.read_temp_raw = Mock(
         return_value=[
             "YES",

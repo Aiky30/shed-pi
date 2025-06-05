@@ -2,11 +2,10 @@ import logging
 import os
 
 import requests
-
-from standalone_modules.shed_pi_module_utils.data_submission import (
+from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
-from standalone_modules.shed_pi_module_utils.utils import get_time
+from shed_pi_module_utils.utils import get_time
 
 logger = logging.getLogger(__name__)
 

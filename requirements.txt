@@ -41,3 +41,4 @@ tomli==2.0.1
 typing_extensions==4.7.1
 urllib3==2.2.1
 virtualenv==20.25.0
+shed-pi-module-utils==0.1.2

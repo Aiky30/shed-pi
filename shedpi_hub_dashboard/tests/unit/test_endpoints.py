@@ -1,8 +1,9 @@
 import json
 
 import pytest
-from django.urls import reverse
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.reverse import reverse
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
@@ -48,6 +49,57 @@ def test_device_module_readings_list(client):
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 2
+
+
+@pytest.mark.django_db
+def test_device_module_readings_list_pagination(client):
+    """
+    An individual device module readings are returned from the module readings endpoint
+    """
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reading",
+        "type": "object",
+        "properties": {
+            "temperature": {"type": "string", "description": "The Temperature"},
+        },
+    }
+    device_module = DeviceModuleFactory(schema=schema)
+    DeviceModuleReadingFactory.create_batch(
+        110, device_module=device_module, data={"temperature": "20"}
+    )
+
+    url = reverse("devicemodulereading-paginated-list")
+    response = client.get(url, data={"device_module": device_module.id})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.data["results"]) == 100
+
+
+@pytest.mark.django_db
+def test_device_module_readings_list_pagination_no_module_supplied(client):
+    """
+    When no module is supplied the user should be supplied a valida tion message telling them so
+    """
+    schema = {
+        "$id": "https://example.com/person.schema.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reading",
+        "type": "object",
+        "properties": {
+            "temperature": {"type": "string", "description": "The Temperature"},
+        },
+    }
+    device_module = DeviceModuleFactory(schema=schema)
+    DeviceModuleReadingFactory.create_batch(
+        110, device_module=device_module, data={"temperature": "20"}
+    )
+
+    url = reverse("devicemodulereading-paginated-list")
+
+    with pytest.raises(ValidationError):
+        client.get(url)
 
 
 @pytest.mark.django_db

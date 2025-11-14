@@ -2,7 +2,6 @@ import json
 
 import pytest
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
@@ -98,8 +97,9 @@ def test_device_module_readings_list_pagination_no_module_supplied(client):
 
     url = reverse("devicemodulereading-paginated-list")
 
-    with pytest.raises(ValidationError):
-        client.get(url)
+    response = client.get(url)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.content == b'{"device_module":"Not supplied"}'
 
 
 @pytest.mark.django_db

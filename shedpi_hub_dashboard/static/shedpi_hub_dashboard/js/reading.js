@@ -99,7 +99,7 @@ let bindFormSubmision = function () {
 let loadTableData = function (deviceModuleId, startDate, endDate) {
 
   // const url = section.getAttribute("data-json-feed")
-  const url = window.location.origin + "/api/v1/device-module-readings/"
+  const url = window.location.origin + "/api/v1/device-module-readings-paginated/"
   const endpoint = new URL(url);
   endpoint.searchParams.append("device_module", deviceModuleId);
   endpoint.searchParams.append("format", "json");
@@ -122,7 +122,7 @@ let loadTableData = function (deviceModuleId, startDate, endDate) {
     .then((response) => {
       const schema = deviceModuleSchemaMap[deviceModuleId]
 
-      table.draw(response, schema)
-      chart.draw(response, schema)
+      table.draw(response["results"], schema)
+      chart.draw(response["results"], schema)
     });
 }

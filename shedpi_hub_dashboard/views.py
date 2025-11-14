@@ -1,8 +1,15 @@
 from django.template.response import TemplateResponse
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.viewsets import GenericViewSet
 
 from .models import DeviceModule, DeviceModuleReading
-from .serlializers import DeviceModuleReadingSerializer, DeviceModuleSerializer
+from .pagination import CreatedAtBasedCursorPagination
+from .serlializers import (
+    DeviceModuleReadingListSerializer,
+    DeviceModuleReadingSerializer,
+    DeviceModuleSerializer,
+)
 
 
 def index(request):
@@ -28,6 +35,11 @@ class DeviceModuleReadingViewSet(viewsets.ModelViewSet):
     queryset = DeviceModuleReading.objects.all()
     serializer_class = DeviceModuleReadingSerializer
 
+    def get_serializer_class(self):
+        if hasattr(self, "action") and self.action == "list":
+            return DeviceModuleReadingListSerializer
+        return DeviceModuleReadingSerializer
+
     def get_queryset(self):
         # FIXME: Validate that the user supplied the get params!
         device_module_id = self.request.query_params.get("device_module")
@@ -45,20 +57,21 @@ class DeviceModuleReadingViewSet(viewsets.ModelViewSet):
 
         return self.queryset
 
-    # def list(self, request):
-    #     queryset = self.get_queryset()
-    #
-    #     context = {"request": request}
-    #     device_module_id = self.request.query_params.get("device_module")
-    #
-    #     if device_module_id:
-    #         queryset = queryset.filter(device_module=device_module_id)
-    #
-    #         context["device_module"] = device_module_id
-    #
-    #     context["queryset"] = queryset
-    #
-    #     serializer = self.get_serializer(data=request.data, context=context)
-    #     serializer.is_valid(raise_exception=True)
-    #
-    #     return Response(serializer.data)
+
+class DeviceModuleReadingPaginatedViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    GenericViewSet,
+):
+    queryset = DeviceModuleReading.objects.all()
+    serializer_class = DeviceModuleReadingListSerializer
+    pagination_class = CreatedAtBasedCursorPagination
+
+    def get_queryset(self):
+        device_module_id = self.request.query_params.get("device_module")
+
+        if not device_module_id:
+            raise ValidationError({"device_module": "Not supplied"})
+
+        return self.queryset.filter(device_module=device_module_id)

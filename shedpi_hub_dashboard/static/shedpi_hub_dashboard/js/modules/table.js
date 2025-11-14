@@ -3,6 +3,9 @@ import {getSchemaDataFields} from "./utils.js";
 
 /* Table visual */
 
+/* TODO: The table needs to have next and prev buttons and auto reload the data,
+    this is going to require a redesign of the fetch */
+
 class dataTable {
   constructor() {
     this.dataset = [];

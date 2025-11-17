@@ -2,11 +2,10 @@ import logging
 import os
 
 import requests
-
-from standalone_modules.shed_pi_module_utils.data_submission import (
+from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
-from standalone_modules.shed_pi_module_utils.utils import get_time
+from shed_pi_module_utils.utils import get_time
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +16,14 @@ class RPIDevice:
     def __init__(
         self,
         submission_service: ReadingSubmissionService,
-        device_module_id: int,
-        cpu_module_id: int,
+        device_module_id: str,
+        cpu_module_id: str,
     ) -> None:
         self.device_module_id = device_module_id
         self.cpu_module_id = cpu_module_id
         self.submission_service = submission_service
 
-    def get_cpu_temp(self):
+    def get_cpu_temp(self) -> float:
         cpu_temp = os.popen("vcgencmd measure_temp").readline()
 
         # Convert the temp read from the OS to a clean float
@@ -37,12 +36,10 @@ class RPIDevice:
         :return:
         """
         cpu_temp = self.get_cpu_temp()
-
-        # FIXME: Should this be a float or a string? Broke the test
         data = {"temperature": str(cpu_temp)}
 
         response = self.submission_service.submit(
-            device_module_id=self.device_module_id, data=data
+            device_module_id=self.cpu_module_id, data=data
         )
 
         return response

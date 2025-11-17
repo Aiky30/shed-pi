@@ -1,28 +1,54 @@
+import configparser
 import time
 
-from standalone_modules.rpi.device import RPIDevice
-from standalone_modules.shed_pi_module_utils.base_protocol import BaseProtocol
-from standalone_modules.shed_pi_module_utils.data_submission import (
+import requests
+from shed_pi_module_utils.base_protocol import BaseProtocol
+from shed_pi_module_utils.data_submission import (
     ReadingSubmissionService,
 )
-from standalone_modules.shed_pi_module_utils.utils import check_arch_is_arm, logger
-from standalone_modules.temperature_module.temperature_probe import TempProbe
+from shed_pi_module_utils.shed_pi_components.ds18b20 import TempProbe
+from shed_pi_module_utils.utils import check_arch_is_arm, logger
+
+from standalone_modules.rpi.device import RPIDevice
 
 TIME_TO_SLEEP = 60  # time in seconds
 
 
+# TODO: There should b many simple scripts, not one entry that manages man modules, they need to be standalone
+#       Port the changes here to the individual modules. There will then be a private readme / or example
+#       doc of how to setup multiple instances and connections from one device
+
+
 class DeviceProtocol(BaseProtocol):
-    def __init__(self, submission_service: ReadingSubmissionService):
+    def __init__(
+        self,
+        submission_service: ReadingSubmissionService,
+    ):
+        config = self.get_config()
+        device_module_id: str = config["device"]["module_id"]
+        ext_temp_module_id: str = config["external_temp"]["module_id"]
+        cpu_temp_module_id: str = config["cpu_temp"]["module_id"]
+
         # Installed modules
-        self.temp_probe = TempProbe(submission_service=submission_service)
+        self.temp_probe = TempProbe()
         self.rpi_device = RPIDevice(
             submission_service=submission_service,
-            device_module_id=None,
-            cpu_module_id=None,
+            device_module_id=device_module_id,
+            cpu_module_id=cpu_temp_module_id,
         )
         self.submission_delay = TIME_TO_SLEEP
 
+        self.submission_service = submission_service
+        self.temp_probe_device_id = ext_temp_module_id
+
+    def get_config(self) -> dict:
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        return config
+
     def stop(self):
+        # FIXME: This should be a threading event, to break when the execution is terminated,
+        #       prevents leaving threads behind
         return False
 
     def startup(self):
@@ -31,13 +57,35 @@ class DeviceProtocol(BaseProtocol):
     def run(self):
         while not self.stop():
             # TODO: Would be nice to be able to bundle multiple calls into 1, less of an issue initially
-            self.temp_probe.submit_reading()
+            self.submit_reading()
             self.rpi_device.submit_reading()
 
             time.sleep(self.submission_delay)
 
     def shutdown(self):
         self.rpi_device.submit_device_shutdown()
+
+    def get_reading(self) -> float:
+        """
+        Useful for collecting many readings from different modules, rather than submitting all
+        at once
+        """
+        return self.temp_probe.read_temp()
+
+    def submit_reading(self) -> requests.Response:
+        """
+        Submits a reading to an external endpoint
+
+        :return:
+        """
+        probe_1_temp = self.get_reading()
+        data = {"temperature": str(probe_1_temp)}
+
+        response = self.submission_service.submit(
+            device_module_id=self.temp_probe_device_id, data=data
+        )
+
+        return response
 
 
 def main():

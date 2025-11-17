@@ -1,6 +1,9 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from shed_pi_module_utils.data_submission import (
+    ReadingSubmissionService,
+)
 
 from shedpi_hub_dashboard.models import DeviceModuleReading
 from shedpi_hub_dashboard.tests.utils.factories import (
@@ -9,22 +12,10 @@ from shedpi_hub_dashboard.tests.utils.factories import (
 from standalone_modules.shed_pi_example_device_installation.device_protocol import (
     DeviceProtocol,
 )
-from standalone_modules.shed_pi_module_utils.data_submission import (
-    ReadingSubmissionService,
-)
 
 
-@patch("standalone_modules.temperature_module.temperature_probe.Path")
 @pytest.mark.django_db
-def test_device_protocol(mocked_path, live_server):
-    # Submission service
-    submission_service = ReadingSubmissionService()
-    submission_service.base_url = live_server.url
-    # Device Protocol
-    device_protocol = DeviceProtocol(submission_service=submission_service)
-    # Override the loop timer for the test to end instantly
-    device_protocol.submission_delay = 0
-    device_protocol.stop = Mock(side_effect=[False, True])
+def test_device_protocol(temp_probe_path, live_server):
     # Temp probe
     schema = {
         "$id": "https://example.com/person.schema.json",
@@ -36,13 +27,6 @@ def test_device_protocol(mocked_path, live_server):
         },
     }
     temp_probe = DeviceModuleFactory(schema=schema)
-    device_protocol.temp_probe.device_id = temp_probe.id
-    device_protocol.temp_probe.read_temp_raw = Mock(
-        return_value=[
-            "YES",
-            "t=12345",
-        ]
-    )
     # RPI CPU temp probe
     rpi_schema = {
         "$id": "https://example.com/person.schema.json",
@@ -54,10 +38,35 @@ def test_device_protocol(mocked_path, live_server):
         },
     }
     rpi_cpu_temp = DeviceModuleFactory(schema=rpi_schema)
-    device_protocol.rpi_device.device_module_id = rpi_cpu_temp.id
+    # Submission service
+    submission_service = ReadingSubmissionService()
+    submission_service.base_url = live_server.url
+    config = {
+        "device": {
+            "module_id": "",
+        },
+        "external_temp": {
+            "module_id": temp_probe.id,
+        },
+        "cpu_temp": {"module_id": rpi_cpu_temp.id},
+    }
+    with patch.object(DeviceProtocol, "get_config", Mock(return_value=config)):
+        # Device Protocol
+        device_protocol = DeviceProtocol(submission_service=submission_service)
+
+    # Override the loop timer for the test to end instantly
+    # FIXME: This is just a patched sleep!
+    device_protocol.submission_delay = 0
+    device_protocol.stop = Mock(side_effect=[False, True])
+    device_protocol.temp_probe.read_temp = Mock(
+        return_value=30.00,
+    )
     device_protocol.rpi_device.get_cpu_temp = Mock(return_value=10.0)
 
-    device_protocol.run()
+    # FIXME: Would be better if we could run for a cycle and exit to prove out the run
+    #       method
+    device_protocol.submit_reading()
+    device_protocol.rpi_device.submit_reading()
 
     # Check that the data was submitted
     assert DeviceModuleReading.objects.filter(device_module=rpi_cpu_temp).count() == 1

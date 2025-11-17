@@ -8,6 +8,8 @@ from shed_pi_module_utils.data_submission import (
 )
 from shed_pi_module_utils.utils import logger
 
+# TODO: uv install for the
+
 
 @dataclass
 class DataReading:

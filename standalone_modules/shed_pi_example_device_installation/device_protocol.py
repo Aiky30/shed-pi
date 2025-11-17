@@ -14,6 +14,11 @@ from standalone_modules.rpi.device import RPIDevice
 TIME_TO_SLEEP = 60  # time in seconds
 
 
+# TODO: There should b many simple scripts, not one entry that manages man modules, they need to be standalone
+#       Port the changes here to the individual modules. There will then be a private readme / or example
+#       doc of how to setup multiple instances and connections from one device
+
+
 class DeviceProtocol(BaseProtocol):
     def __init__(
         self,

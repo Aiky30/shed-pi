@@ -34,6 +34,7 @@ class DeviceProtocol(BaseProtocol):
         self.temp_probe_device_id = temp_probe_device_id
 
     def stop(self):
+        # FIXKE: This should be a threading event, to break when the execution is terminated, prevents leaving threads behind
         return False
 
     def startup(self):
@@ -50,13 +51,20 @@ class DeviceProtocol(BaseProtocol):
     def shutdown(self):
         self.rpi_device.submit_device_shutdown()
 
+    def get_reading(self) -> bytes:
+        """
+        Useful for collecting many readings from different modules, rather than submitting all
+        at once
+        """
+        return self.temp_probe.read_temp()
+
     def submit_reading(self) -> requests.Response:
         """
         Submits a reading to an external endpoint
 
         :return:
         """
-        probe_1_temp = self.temp_probe.read_temp()
+        probe_1_temp = self.get_reading()
 
         # FIXME: Should this be a float or a string? Broke the test
         data = {"temperature": str(probe_1_temp)}

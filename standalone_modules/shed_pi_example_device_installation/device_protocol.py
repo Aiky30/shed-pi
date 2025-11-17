@@ -1,5 +1,5 @@
+import configparser
 import time
-from typing import Optional
 
 import requests
 from shed_pi_module_utils.base_protocol import BaseProtocol
@@ -18,23 +18,32 @@ class DeviceProtocol(BaseProtocol):
     def __init__(
         self,
         submission_service: ReadingSubmissionService,
-        temp_probe_device_id: Optional[int] = None,
     ):
+        config = self.get_config()
+        device_module_id: str = config["device"]["module_id"]
+        ext_temp_module_id: str = config["external_temp"]["module_id"]
+        cpu_temp_module_id: str = config["cpu_temp"]["module_id"]
+
         # Installed modules
         self.temp_probe = TempProbe()
         self.rpi_device = RPIDevice(
             submission_service=submission_service,
-            device_module_id=None,
-            cpu_module_id=None,
+            device_module_id=device_module_id,
+            cpu_module_id=cpu_temp_module_id,
         )
         self.submission_delay = TIME_TO_SLEEP
 
-        # FIXME: Part of the migration of submission service out of the probe driver
         self.submission_service = submission_service
-        self.temp_probe_device_id = temp_probe_device_id
+        self.temp_probe_device_id = ext_temp_module_id
+
+    def get_config(self) -> dict:
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        return config
 
     def stop(self):
-        # FIXKE: This should be a threading event, to break when the execution is terminated, prevents leaving threads behind
+        # FIXME: This should be a threading event, to break when the execution is terminated,
+        #       prevents leaving threads behind
         return False
 
     def startup(self):
@@ -51,7 +60,7 @@ class DeviceProtocol(BaseProtocol):
     def shutdown(self):
         self.rpi_device.submit_device_shutdown()
 
-    def get_reading(self) -> bytes:
+    def get_reading(self) -> float:
         """
         Useful for collecting many readings from different modules, rather than submitting all
         at once
@@ -65,8 +74,6 @@ class DeviceProtocol(BaseProtocol):
         :return:
         """
         probe_1_temp = self.get_reading()
-
-        # FIXME: Should this be a float or a string? Broke the test
         data = {"temperature": str(probe_1_temp)}
 
         response = self.submission_service.submit(
